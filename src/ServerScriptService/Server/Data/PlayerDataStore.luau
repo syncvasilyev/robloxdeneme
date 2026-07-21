@@ -35,6 +35,10 @@ local DEFAULT_DATA = {
 	party = {
 		hostCount = 0,
 	},
+	duo = {
+		optIn = false,
+		interests = {},
+	},
 	playtimeSeconds = 0,
 	rewards = {
 		balloon50h = false,
