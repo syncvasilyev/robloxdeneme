@@ -184,7 +184,10 @@ function DuoTabUI.build(parent: Frame, DuoClient: any)
 	end
 
 	refreshButton.MouseButton1Click:Connect(refreshList)
-	refreshList()
+	-- Runs in the background: DuoClient.listPlayers() blocks on a server round-trip, and doing
+	-- that synchronously here would stop this tab from ever being marked visible by its host
+	-- (MainMenuUI/PhoneUI only flip Visible on *after* build() returns).
+	task.spawn(refreshList)
 end
 
 return DuoTabUI
