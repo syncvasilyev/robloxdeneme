@@ -17,7 +17,9 @@ local SettingsTabUI = require(script.Parent.Parent.UI.SettingsTabUI)
 local PhoneClient = {}
 
 function PhoneClient.init()
+	print("[TELEFON TANI] PhoneClient.init basladi")
 	PhoneUI.init()
+	print("[TELEFON TANI] PhoneUI.init bitti, buton olusturulmus olmali")
 
 	PhoneUI.registerApp("PROFILE", "Profil", "👤", function(parent: Frame)
 		ProfileTabUI.build(parent, ProfileClient, CosmeticsClient)
@@ -31,6 +33,7 @@ function PhoneClient.init()
 	PhoneUI.registerApp("SETTINGS", "Ayarlar", "⚙️", function(parent: Frame)
 		SettingsTabUI.build(parent, OnboardingClient, PhoneUI)
 	end)
+	print("[TELEFON TANI] PhoneClient.init tamamen bitti")
 end
 
 return PhoneClient
