@@ -1,5 +1,7 @@
 --!strict
--- Client bootstrap.
+-- Client bootstrap. Each system's init() is isolated with pcall so one system's failure can't
+-- silently prevent everything after it from starting — failures are printed as clear warnings
+-- instead (check the Output window for "init.client: X failed" if something isn't showing up).
 
 local OnboardingClient = require(script.Systems.OnboardingClient)
 local MainMenuClient = require(script.Systems.MainMenuClient)
@@ -18,19 +20,30 @@ local DuoInviteClient = require(script.Systems.DuoInviteClient)
 local NotificationsClient = require(script.Systems.NotificationsClient)
 local PhoneClient = require(script.Systems.PhoneClient)
 
-OnboardingClient.init()
-MainMenuClient.init()
-NametagClient.init()
-PartyMusicClient.init()
-AmbientMusicClient.init()
-SystemFeedbackClient.init()
-PlayerVoiceVolumeClient.init()
-PlayerContextMenuClient.init()
-SprintClient.init()
-FlyClient.init()
-ModRadioClient.init()
-PlaytimeClient.init()
-BalloonClient.init()
-DuoInviteClient.init()
-NotificationsClient.init()
-PhoneClient.init()
+local systems = {
+	{ name = "OnboardingClient", module = OnboardingClient },
+	{ name = "MainMenuClient", module = MainMenuClient },
+	{ name = "NametagClient", module = NametagClient },
+	{ name = "PartyMusicClient", module = PartyMusicClient },
+	{ name = "AmbientMusicClient", module = AmbientMusicClient },
+	{ name = "SystemFeedbackClient", module = SystemFeedbackClient },
+	{ name = "PlayerVoiceVolumeClient", module = PlayerVoiceVolumeClient },
+	{ name = "PlayerContextMenuClient", module = PlayerContextMenuClient },
+	{ name = "SprintClient", module = SprintClient },
+	{ name = "FlyClient", module = FlyClient },
+	{ name = "ModRadioClient", module = ModRadioClient },
+	{ name = "PlaytimeClient", module = PlaytimeClient },
+	{ name = "BalloonClient", module = BalloonClient },
+	{ name = "DuoInviteClient", module = DuoInviteClient },
+	{ name = "NotificationsClient", module = NotificationsClient },
+	{ name = "PhoneClient", module = PhoneClient },
+}
+
+for _, system in ipairs(systems) do
+	local success, err = pcall(function()
+		system.module.init()
+	end)
+	if not success then
+		warn(("init.client: %s failed to initialize: %s"):format(system.name, tostring(err)))
+	end
+end

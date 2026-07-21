@@ -1,5 +1,7 @@
 --!strict
--- Server bootstrap: initializes data layer first, then gameplay systems that depend on it.
+-- Server bootstrap. Each system's init() is isolated with pcall so one system's failure can't
+-- silently prevent everything after it from starting — failures are printed as clear warnings
+-- instead (check the Output window for "init.server: X failed" if something isn't working).
 
 local PlayerDataStore = require(script.Data.PlayerDataStore)
 local GamepassService = require(script.Data.GamepassService)
@@ -19,20 +21,31 @@ local ModAdminSystem = require(script.Systems.ModAdminSystem)
 local PartyHostTitleSystem = require(script.Systems.PartyHostTitleSystem)
 local DuoSystem = require(script.Systems.DuoSystem)
 
-PlayerDataStore.init()
-GamepassService.init()
-PurchaseSystem.init()
-OnboardingSystem.init()
-ProfileSystem.init()
-GroupSystem.init()
-PartySystem.init()
-SettingsSystem.init()
-CosmeticsSystem.init()
-CharSystem.init()
-ReportSystem.init()
-PlaytimeSystem.init()
-SprintSystem.init()
-ModRadioSystem.init()
-ModAdminSystem.init()
-PartyHostTitleSystem.init()
-DuoSystem.init()
+local systems = {
+	{ name = "PlayerDataStore", module = PlayerDataStore },
+	{ name = "GamepassService", module = GamepassService },
+	{ name = "PurchaseSystem", module = PurchaseSystem },
+	{ name = "OnboardingSystem", module = OnboardingSystem },
+	{ name = "ProfileSystem", module = ProfileSystem },
+	{ name = "GroupSystem", module = GroupSystem },
+	{ name = "PartySystem", module = PartySystem },
+	{ name = "SettingsSystem", module = SettingsSystem },
+	{ name = "CosmeticsSystem", module = CosmeticsSystem },
+	{ name = "CharSystem", module = CharSystem },
+	{ name = "ReportSystem", module = ReportSystem },
+	{ name = "PlaytimeSystem", module = PlaytimeSystem },
+	{ name = "SprintSystem", module = SprintSystem },
+	{ name = "ModRadioSystem", module = ModRadioSystem },
+	{ name = "ModAdminSystem", module = ModAdminSystem },
+	{ name = "PartyHostTitleSystem", module = PartyHostTitleSystem },
+	{ name = "DuoSystem", module = DuoSystem },
+}
+
+for _, system in ipairs(systems) do
+	local success, err = pcall(function()
+		system.module.init()
+	end)
+	if not success then
+		warn(("init.server: %s failed to initialize: %s"):format(system.name, tostring(err)))
+	end
+end
