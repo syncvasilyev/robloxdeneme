@@ -25,13 +25,26 @@ local function attachNametag(player: Player, character: Model)
 
 	local billboard = Instance.new("BillboardGui")
 	billboard.Name = "NicknameTag"
-	billboard.Size = UDim2.fromOffset(200, 40)
-	billboard.StudsOffset = Vector3.new(0, 2.2, 0)
+	billboard.Size = UDim2.fromOffset(200, 58)
+	billboard.StudsOffset = Vector3.new(0, 2.4, 0)
 	billboard.AlwaysOnTop = true
 	billboard.Parent = head
 
+	local titleLabel = Instance.new("TextLabel")
+	titleLabel.Name = "TitleLabel"
+	titleLabel.Size = UDim2.new(1, 0, 0, 16)
+	titleLabel.BackgroundTransparency = 1
+	titleLabel.Font = Theme.FontBold
+	titleLabel.TextSize = 12
+	titleLabel.TextStrokeTransparency = 0.5
+	titleLabel.TextColor3 = Theme.Colors.AccentRedBright
+	titleLabel.Text = ""
+	titleLabel.Visible = false
+	titleLabel.Parent = billboard
+
 	local label = Instance.new("TextLabel")
-	label.Size = UDim2.fromScale(1, 1)
+	label.Position = UDim2.new(0, 0, 0, 18)
+	label.Size = UDim2.new(1, 0, 0, 40)
 	label.BackgroundTransparency = 1
 	label.Font = Theme.FontBold
 	label.TextSize = 16
@@ -39,6 +52,14 @@ local function attachNametag(player: Player, character: Model)
 	label.Text = (player:GetAttribute("Nickname") :: string?) or player.DisplayName
 	label.TextColor3 = (player:GetAttribute("NicknameColor") :: Color3?) or Theme.Colors.TextPrimary
 	label.Parent = billboard
+
+	local function updateTitle()
+		local title = player:GetAttribute("PartyHostTitle") :: string?
+		titleLabel.Text = title or ""
+		titleLabel.Visible = title ~= nil
+	end
+	updateTitle()
+	player:GetAttributeChangedSignal("PartyHostTitle"):Connect(updateTitle)
 
 	player:GetAttributeChangedSignal("Nickname"):Connect(function()
 		label.Text = (player:GetAttribute("Nickname") :: string?) or player.DisplayName
