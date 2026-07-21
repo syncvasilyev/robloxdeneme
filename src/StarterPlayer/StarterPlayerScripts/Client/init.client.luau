@@ -1,49 +1,42 @@
 --!strict
--- Client bootstrap. Each system's init() is isolated with pcall so one system's failure can't
--- silently prevent everything after it from starting — failures are printed as clear warnings
--- instead (check the Output window for "init.client: X failed" if something isn't showing up).
+-- Client bootstrap. Each system's require() AND init() are individually wrapped in pcall so one
+-- system failing to even load can't silently prevent everything listed after it from starting.
+-- Check the Output window for "init.client:" lines if something isn't showing up.
 
-local OnboardingClient = require(script.Systems.OnboardingClient)
-local MainMenuClient = require(script.Systems.MainMenuClient)
-local NametagClient = require(script.Systems.NametagClient)
-local PartyMusicClient = require(script.Systems.PartyMusicClient)
-local AmbientMusicClient = require(script.Systems.AmbientMusicClient)
-local SystemFeedbackClient = require(script.Systems.SystemFeedbackClient)
-local PlayerVoiceVolumeClient = require(script.Systems.PlayerVoiceVolumeClient)
-local PlayerContextMenuClient = require(script.Systems.PlayerContextMenuClient)
-local SprintClient = require(script.Systems.SprintClient)
-local FlyClient = require(script.Systems.FlyClient)
-local ModRadioClient = require(script.Systems.ModRadioClient)
-local PlaytimeClient = require(script.Systems.PlaytimeClient)
-local BalloonClient = require(script.Systems.BalloonClient)
-local DuoInviteClient = require(script.Systems.DuoInviteClient)
-local NotificationsClient = require(script.Systems.NotificationsClient)
-local PhoneClient = require(script.Systems.PhoneClient)
-
-local systems = {
-	{ name = "OnboardingClient", module = OnboardingClient },
-	{ name = "MainMenuClient", module = MainMenuClient },
-	{ name = "NametagClient", module = NametagClient },
-	{ name = "PartyMusicClient", module = PartyMusicClient },
-	{ name = "AmbientMusicClient", module = AmbientMusicClient },
-	{ name = "SystemFeedbackClient", module = SystemFeedbackClient },
-	{ name = "PlayerVoiceVolumeClient", module = PlayerVoiceVolumeClient },
-	{ name = "PlayerContextMenuClient", module = PlayerContextMenuClient },
-	{ name = "SprintClient", module = SprintClient },
-	{ name = "FlyClient", module = FlyClient },
-	{ name = "ModRadioClient", module = ModRadioClient },
-	{ name = "PlaytimeClient", module = PlaytimeClient },
-	{ name = "BalloonClient", module = BalloonClient },
-	{ name = "DuoInviteClient", module = DuoInviteClient },
-	{ name = "NotificationsClient", module = NotificationsClient },
-	{ name = "PhoneClient", module = PhoneClient },
+local SYSTEM_NAMES = {
+	"OnboardingClient",
+	"MainMenuClient",
+	"NametagClient",
+	"PartyMusicClient",
+	"AmbientMusicClient",
+	"SystemFeedbackClient",
+	"PlayerVoiceVolumeClient",
+	"PlayerContextMenuClient",
+	"SprintClient",
+	"FlyClient",
+	"ModRadioClient",
+	"PlaytimeClient",
+	"BalloonClient",
+	"DuoInviteClient",
+	"NotificationsClient",
+	"PhoneClient",
 }
 
-for _, system in ipairs(systems) do
-	local success, err = pcall(function()
-		system.module.init()
-	end)
-	if not success then
-		warn(("init.client: %s failed to initialize: %s"):format(system.name, tostring(err)))
+for _, name in ipairs(SYSTEM_NAMES) do
+	local moduleScript = script.Systems:FindFirstChild(name)
+	if not moduleScript then
+		warn(("init.client: %s not found under Client/Systems"):format(name))
+	else
+		local requireSuccess, moduleOrError = pcall(require, moduleScript)
+		if not requireSuccess then
+			warn(("init.client: %s failed to load: %s"):format(name, tostring(moduleOrError)))
+		else
+			local initSuccess, initError = pcall(function()
+				(moduleOrError :: any).init()
+			end)
+			if not initSuccess then
+				warn(("init.client: %s failed to initialize: %s"):format(name, tostring(initError)))
+			end
+		end
 	end
 end

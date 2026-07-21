@@ -1,51 +1,44 @@
 --!strict
--- Server bootstrap. Each system's init() is isolated with pcall so one system's failure can't
--- silently prevent everything after it from starting — failures are printed as clear warnings
--- instead (check the Output window for "init.server: X failed" if something isn't working).
+-- Server bootstrap. Each system's require() AND init() are individually wrapped in pcall so one
+-- system failing to even load can't silently prevent everything listed after it from starting.
+-- Check the Output window for "init.server:" lines if something isn't working.
 
-local PlayerDataStore = require(script.Data.PlayerDataStore)
-local GamepassService = require(script.Data.GamepassService)
-local PurchaseSystem = require(script.Systems.PurchaseSystem)
-local OnboardingSystem = require(script.Systems.OnboardingSystem)
-local ProfileSystem = require(script.Systems.ProfileSystem)
-local GroupSystem = require(script.Systems.GroupSystem)
-local PartySystem = require(script.Systems.PartySystem)
-local SettingsSystem = require(script.Systems.SettingsSystem)
-local CosmeticsSystem = require(script.Systems.CosmeticsSystem)
-local CharSystem = require(script.Systems.CharSystem)
-local ReportSystem = require(script.Systems.ReportSystem)
-local PlaytimeSystem = require(script.Systems.PlaytimeSystem)
-local SprintSystem = require(script.Systems.SprintSystem)
-local ModRadioSystem = require(script.Systems.ModRadioSystem)
-local ModAdminSystem = require(script.Systems.ModAdminSystem)
-local PartyHostTitleSystem = require(script.Systems.PartyHostTitleSystem)
-local DuoSystem = require(script.Systems.DuoSystem)
-
-local systems = {
-	{ name = "PlayerDataStore", module = PlayerDataStore },
-	{ name = "GamepassService", module = GamepassService },
-	{ name = "PurchaseSystem", module = PurchaseSystem },
-	{ name = "OnboardingSystem", module = OnboardingSystem },
-	{ name = "ProfileSystem", module = ProfileSystem },
-	{ name = "GroupSystem", module = GroupSystem },
-	{ name = "PartySystem", module = PartySystem },
-	{ name = "SettingsSystem", module = SettingsSystem },
-	{ name = "CosmeticsSystem", module = CosmeticsSystem },
-	{ name = "CharSystem", module = CharSystem },
-	{ name = "ReportSystem", module = ReportSystem },
-	{ name = "PlaytimeSystem", module = PlaytimeSystem },
-	{ name = "SprintSystem", module = SprintSystem },
-	{ name = "ModRadioSystem", module = ModRadioSystem },
-	{ name = "ModAdminSystem", module = ModAdminSystem },
-	{ name = "PartyHostTitleSystem", module = PartyHostTitleSystem },
-	{ name = "DuoSystem", module = DuoSystem },
+local SYSTEM_NAMES = {
+	{ name = "PlayerDataStore", folder = "Data" },
+	{ name = "GamepassService", folder = "Data" },
+	{ name = "PurchaseSystem", folder = "Systems" },
+	{ name = "OnboardingSystem", folder = "Systems" },
+	{ name = "ProfileSystem", folder = "Systems" },
+	{ name = "GroupSystem", folder = "Systems" },
+	{ name = "PartySystem", folder = "Systems" },
+	{ name = "SettingsSystem", folder = "Systems" },
+	{ name = "CosmeticsSystem", folder = "Systems" },
+	{ name = "CharSystem", folder = "Systems" },
+	{ name = "ReportSystem", folder = "Systems" },
+	{ name = "PlaytimeSystem", folder = "Systems" },
+	{ name = "SprintSystem", folder = "Systems" },
+	{ name = "ModRadioSystem", folder = "Systems" },
+	{ name = "ModAdminSystem", folder = "Systems" },
+	{ name = "PartyHostTitleSystem", folder = "Systems" },
+	{ name = "DuoSystem", folder = "Systems" },
 }
 
-for _, system in ipairs(systems) do
-	local success, err = pcall(function()
-		system.module.init()
-	end)
-	if not success then
-		warn(("init.server: %s failed to initialize: %s"):format(system.name, tostring(err)))
+for _, entry in ipairs(SYSTEM_NAMES) do
+	local folder = script:FindFirstChild(entry.folder)
+	local moduleScript = folder and folder:FindFirstChild(entry.name)
+	if not moduleScript then
+		warn(("init.server: %s not found under Server/%s"):format(entry.name, entry.folder))
+	else
+		local requireSuccess, moduleOrError = pcall(require, moduleScript)
+		if not requireSuccess then
+			warn(("init.server: %s failed to load: %s"):format(entry.name, tostring(moduleOrError)))
+		else
+			local initSuccess, initError = pcall(function()
+				(moduleOrError :: any).init()
+			end)
+			if not initSuccess then
+				warn(("init.server: %s failed to initialize: %s"):format(entry.name, tostring(initError)))
+			end
+		end
 	end
 end
