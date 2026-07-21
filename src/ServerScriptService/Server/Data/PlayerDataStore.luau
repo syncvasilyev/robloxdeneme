@@ -87,6 +87,12 @@ local function loadProfile(player: Player)
 	data.loginCount += 1
 	profiles[player] = data
 	sessionStartTimes[player] = os.time()
+
+	-- Replicated to all clients so nametags (see NametagClient) can show the chosen nickname.
+	player:SetAttribute("Nickname", if data.profile.nickname ~= "" then data.profile.nickname else player.DisplayName)
+	if not player:GetAttribute("NicknameColor") then
+		player:SetAttribute("NicknameColor", Color3.fromRGB(245, 245, 245))
+	end
 end
 
 local function saveProfile(player: Player)
