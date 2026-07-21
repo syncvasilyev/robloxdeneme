@@ -2,6 +2,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Theme = require(ReplicatedStorage.Modules.Theme)
+local CosmeticPresets = require(ReplicatedStorage.Modules.CosmeticPresets)
 
 local ProfileTabUI = {}
 
@@ -45,7 +46,7 @@ local function createTextBox(parent: Instance, position: UDim2, height: number, 
 	return box
 end
 
-function ProfileTabUI.build(parent: Frame, ProfileClient: any)
+function ProfileTabUI.build(parent: Frame, ProfileClient: any, CosmeticsClient: any)
 	createLabel(parent, "NICKNAME", UDim2.new(0, 16, 0, 16))
 	local nicknameBox = createTextBox(parent, UDim2.new(0, 16, 0, 36), 40, "Nickname'ini yaz...", false)
 
@@ -98,6 +99,50 @@ function ProfileTabUI.build(parent: Frame, ProfileClient: any)
 			bioBox.Text = profile.bio or ""
 		end
 	end)
+
+	createLabel(parent, "RAINBOW NICKNAME (70 Robux Gamepass)", UDim2.new(0, 16, 0, 306))
+	local rainbowButton = Instance.new("TextButton")
+	rainbowButton.Position = UDim2.new(0, 16, 0, 328)
+	rainbowButton.Size = UDim2.new(1, -32, 0, 36)
+	rainbowButton.BackgroundColor3 = Theme.Colors.Surface
+	rainbowButton.Font = Theme.Font
+	rainbowButton.TextSize = 13
+	rainbowButton.TextColor3 = Theme.Colors.TextPrimary
+	rainbowButton.Text = "Rainbow Nickname Aç-Kapat"
+	rainbowButton.Parent = parent
+	createCorner(rainbowButton, UDim.new(0, 8))
+	local rainbowEnabled = false
+	rainbowButton.MouseButton1Click:Connect(function()
+		rainbowEnabled = not rainbowEnabled
+		CosmeticsClient.setRainbowNickname(rainbowEnabled)
+	end)
+
+	createLabel(parent, "PROFİL FOTOĞRAFI (230 Robux Gamepass)", UDim2.new(0, 16, 0, 376))
+	local photoRow = Instance.new("Frame")
+	photoRow.Position = UDim2.new(0, 16, 0, 398)
+	photoRow.Size = UDim2.new(1, -32, 0, 36)
+	photoRow.BackgroundTransparency = 1
+	photoRow.Parent = parent
+	local photoLayout = Instance.new("UIListLayout")
+	photoLayout.FillDirection = Enum.FillDirection.Horizontal
+	photoLayout.Padding = UDim.new(0, 8)
+	photoLayout.Parent = photoRow
+
+	for _, photo in ipairs(CosmeticPresets.ProfilePhotos) do
+		local photoButton = Instance.new("TextButton")
+		photoButton.Size = UDim2.new(0, 100, 1, 0)
+		photoButton.BackgroundColor3 = Theme.Colors.SurfaceGlass
+		photoButton.Font = Theme.Font
+		photoButton.TextSize = 12
+		photoButton.TextColor3 = Theme.Colors.TextPrimary
+		photoButton.Text = photo.name
+		photoButton.Parent = photoRow
+		createCorner(photoButton, UDim.new(0, 8))
+		photoButton.MouseButton1Click:Connect(function()
+			local result = CosmeticsClient.setProfilePhoto(photo.id)
+			statusLabel.Text = if result and result.success then "Profil fotoğrafı güncellendi." else (result and result.error) or "Güncellenemedi."
+		end)
+	end
 end
 
 return ProfileTabUI

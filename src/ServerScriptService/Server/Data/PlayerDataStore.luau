@@ -20,18 +20,18 @@ local DEFAULT_DATA = {
 	profile = {
 		nickname = "",
 		bio = "",
-		profilePhotoId = 0,
+		profilePhotoId = "", -- id into CosmeticPresets.ProfilePhotos, "" = default avatar thumbnail
 	},
 	cosmetics = {
 		rainbowNickname = false,
 		r6Mode = false,
-		larp = false,
 		trail = "None", -- "None" | "Normal" | "Flying"
+		-- larpOutfitId is intentionally absent here: its default is nil, and nil-valued keys
+		-- can't be reconciled from a table literal anyway (see `reconcile` below), so it's just
+		-- read as nil until a player equips an outfit.
 	},
-	group = {
-		groupId = nil,
-		color = { 1, 1, 1 },
-	},
+	-- Group membership (see GroupSystem) is intentionally not persisted here — it's a
+	-- per-server social tag, not saved player state.
 	party = {
 		hostCount = 0,
 	},
@@ -90,6 +90,7 @@ local function loadProfile(player: Player)
 
 	-- Replicated to all clients so nametags (see NametagClient) can show the chosen nickname.
 	player:SetAttribute("Nickname", if data.profile.nickname ~= "" then data.profile.nickname else player.DisplayName)
+	player:SetAttribute("RainbowNickname", data.cosmetics.rainbowNickname)
 	if not player:GetAttribute("NicknameColor") then
 		player:SetAttribute("NicknameColor", Color3.fromRGB(245, 245, 245))
 	end

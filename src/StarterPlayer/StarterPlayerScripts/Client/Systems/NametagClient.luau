@@ -3,6 +3,7 @@
 -- nickname (not just their Roblox username) and group color can be shown above their head.
 
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Theme = require(ReplicatedStorage.Modules.Theme)
@@ -43,7 +44,33 @@ local function attachNametag(player: Player, character: Model)
 		label.Text = (player:GetAttribute("Nickname") :: string?) or player.DisplayName
 	end)
 	player:GetAttributeChangedSignal("NicknameColor"):Connect(function()
-		label.TextColor3 = (player:GetAttribute("NicknameColor") :: Color3?) or Theme.Colors.TextPrimary
+		if not player:GetAttribute("RainbowNickname") then
+			label.TextColor3 = (player:GetAttribute("NicknameColor") :: Color3?) or Theme.Colors.TextPrimary
+		end
+	end)
+
+	local rainbowConnection: RBXScriptConnection? = nil
+	local function updateRainbowState()
+		local isRainbow = player:GetAttribute("RainbowNickname") == true
+		if isRainbow and not rainbowConnection then
+			rainbowConnection = RunService.Heartbeat:Connect(function()
+				local hue = (os.clock() * 0.15) % 1
+				label.TextColor3 = Color3.fromHSV(hue, 0.85, 1)
+			end)
+		elseif not isRainbow and rainbowConnection then
+			rainbowConnection:Disconnect()
+			rainbowConnection = nil
+			label.TextColor3 = (player:GetAttribute("NicknameColor") :: Color3?) or Theme.Colors.TextPrimary
+		end
+	end
+	updateRainbowState()
+	player:GetAttributeChangedSignal("RainbowNickname"):Connect(updateRainbowState)
+
+	billboard.AncestryChanged:Connect(function()
+		if not billboard:IsDescendantOf(game) and rainbowConnection then
+			rainbowConnection:Disconnect()
+			rainbowConnection = nil
+		end
 	end)
 end
 
