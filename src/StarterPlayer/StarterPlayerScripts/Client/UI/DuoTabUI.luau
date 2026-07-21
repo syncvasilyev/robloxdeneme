@@ -40,15 +40,21 @@ function DuoTabUI.build(parent: Frame, DuoClient: any)
 	interestsLabel.Text = "İlgi Alanların (en fazla 5)"
 	interestsLabel.Parent = parent
 
-	local tagsFrame = Instance.new("Frame")
+	-- Horizontally scrolling instead of wrapping: UIListLayout's wrap support isn't available
+	-- on every Studio version, so this avoids depending on it.
+	local tagsFrame = Instance.new("ScrollingFrame")
 	tagsFrame.Position = UDim2.new(0, 16, 0, 92)
-	tagsFrame.Size = UDim2.new(1, -32, 0, 60)
+	tagsFrame.Size = UDim2.new(1, -32, 0, 40)
 	tagsFrame.BackgroundTransparency = 1
+	tagsFrame.BorderSizePixel = 0
+	tagsFrame.ScrollingDirection = Enum.ScrollingDirection.X
+	tagsFrame.ScrollBarThickness = 4
+	tagsFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+	tagsFrame.AutomaticCanvasSize = Enum.AutomaticSize.X
 	tagsFrame.Parent = parent
 
 	local tagsLayout = Instance.new("UIListLayout")
 	tagsLayout.FillDirection = Enum.FillDirection.Horizontal
-	tagsLayout.Wraps = true
 	tagsLayout.Padding = UDim.new(0, 6)
 	tagsLayout.Parent = tagsFrame
 

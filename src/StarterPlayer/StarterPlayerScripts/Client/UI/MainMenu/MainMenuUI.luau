@@ -105,7 +105,9 @@ end
 local function setOpen(open: boolean)
 	isOpen = open
 	assert(panel, "MainMenuUI.init() must run before toggling the menu")
-	local goalPosition = if open then UDim2.new(1, -420, 0.5, 0) else UDim2.new(1, 40, 0.5, 0)
+	-- Panel is 460px wide; open position must leave its right edge on-screen (with a small
+	-- margin) or the close button near that edge becomes unreachable.
+	local goalPosition = if open then UDim2.new(1, -470, 0.5, 0) else UDim2.new(1, 40, 0.5, 0)
 	TweenService:Create(panel, TweenInfo.new(0.25, Enum.EasingStyle.Quad), { Position = goalPosition }):Play()
 end
 
