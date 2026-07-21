@@ -36,6 +36,10 @@ local DEFAULT_DATA = {
 		hostCount = 0,
 	},
 	playtimeSeconds = 0,
+	rewards = {
+		balloon50h = false,
+		speedBoost100h = false,
+	},
 	settings = {
 		musicVolume = 0.5,
 		playerVolumeOverrides = {},
@@ -136,6 +140,17 @@ end
 --- Forces an immediate save (e.g. right after a critical flag like onboardingCompleted changes).
 function PlayerDataStore.save(player: Player)
 	saveProfile(player)
+end
+
+--- Playtime including the current, not-yet-saved session (playtimeSeconds is only updated on
+--- save). Returns nil if the profile hasn't loaded yet.
+function PlayerDataStore.getLivePlaytimeSeconds(player: Player): number?
+	local data = profiles[player]
+	if not data then
+		return nil
+	end
+	local sessionStart = sessionStartTimes[player] or os.time()
+	return data.playtimeSeconds + (os.time() - sessionStart)
 end
 
 function PlayerDataStore.init()
