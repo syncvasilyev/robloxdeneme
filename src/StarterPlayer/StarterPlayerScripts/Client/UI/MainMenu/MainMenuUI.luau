@@ -64,16 +64,17 @@ local function mountTab(id: string)
 
 	local button = Instance.new("TextButton")
 	button.Name = id .. "Tab"
-	button.Size = UDim2.new(1, 0, 0, 44)
+	button.Size = UDim2.new(1, 0, 0, 46)
 	button.BackgroundColor3 = Theme.Colors.Surface
-	button.Font = Theme.Font
-	button.TextSize = 15
+	button.Font = Theme.FontBold
+	button.TextSize = 14
 	button.TextColor3 = Theme.Colors.TextPrimary
-	button.Text = definition.label
+	button.Text = "  " .. definition.label
+	button.TextXAlignment = Enum.TextXAlignment.Left
 	button.AutoButtonColor = true
 	button.LayoutOrder = #tabOrder
 	button.Parent = tabBarFrame
-	createCorner(button, UDim.new(0, 8))
+	createCorner(button, UDim.new(0, 10))
 	tabButtons[id] = button
 
 	local content = Instance.new("Frame")
@@ -102,13 +103,15 @@ function MainMenuUI.registerTab(id: string, label: string, build: (Frame) -> ())
 	end
 end
 
+local PANEL_WIDTH = 620
+
 local function setOpen(open: boolean)
 	isOpen = open
 	assert(panel, "MainMenuUI.init() must run before toggling the menu")
-	-- Panel is 460px wide; open position must leave its right edge on-screen (with a small
-	-- margin) or the close button near that edge becomes unreachable.
-	local goalPosition = if open then UDim2.new(1, -470, 0.5, 0) else UDim2.new(1, 40, 0.5, 0)
-	TweenService:Create(panel, TweenInfo.new(0.25, Enum.EasingStyle.Quad), { Position = goalPosition }):Play()
+	-- Open position must leave the panel's right edge on-screen (with a small margin) or the
+	-- close button near that edge becomes unreachable.
+	local goalPosition = if open then UDim2.new(1, -(PANEL_WIDTH + 10), 0.5, 0) else UDim2.new(1, 40, 0.5, 0)
+	TweenService:Create(panel, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Position = goalPosition }):Play()
 end
 
 function MainMenuUI.toggle()
@@ -135,14 +138,15 @@ function MainMenuUI.init()
 	plusButton.Name = "PlusButton"
 	plusButton.AnchorPoint = Vector2.new(1, 1)
 	plusButton.Position = UDim2.new(1, -24, 1, -24)
-	plusButton.Size = UDim2.fromOffset(56, 56)
+	plusButton.Size = UDim2.fromOffset(58, 58)
 	plusButton.BackgroundColor3 = Theme.Colors.AccentRed
-	plusButton.Font = Theme.FontBold
+	plusButton.Font = Theme.FontBlack
 	plusButton.TextSize = 30
 	plusButton.TextColor3 = Theme.Colors.TextPrimary
 	plusButton.Text = "+"
 	plusButton.Parent = screenGui
 	createCorner(plusButton, UDim.new(1, 0))
+	Theme.applyGlass(plusButton)
 	plusButton.MouseButton1Click:Connect(function()
 		MainMenuUI.toggle()
 	end)
@@ -151,17 +155,31 @@ function MainMenuUI.init()
 	panelFrame.Name = "Panel"
 	panelFrame.AnchorPoint = Vector2.new(0, 0.5)
 	panelFrame.Position = UDim2.new(1, 40, 0.5, 0)
-	panelFrame.Size = UDim2.new(0, 460, 0, 560)
+	panelFrame.Size = UDim2.new(0, PANEL_WIDTH, 0, 600)
 	panelFrame.BackgroundColor3 = Theme.Colors.Background
 	panelFrame.BorderSizePixel = 0
+	panelFrame.ClipsDescendants = true
 	panelFrame.Parent = screenGui
 	createCorner(panelFrame, Theme.CornerRadius)
+	Theme.applyGlass(panelFrame)
 	panel = panelFrame
+
+	local headerLabel = Instance.new("TextLabel")
+	headerLabel.Name = "HeaderLabel"
+	headerLabel.Position = UDim2.new(0, 20, 0, 16)
+	headerLabel.Size = UDim2.new(1, -70, 0, 28)
+	headerLabel.BackgroundTransparency = 1
+	headerLabel.Font = Theme.FontBlack
+	headerLabel.TextSize = 20
+	headerLabel.TextColor3 = Theme.Colors.TextPrimary
+	headerLabel.TextXAlignment = Enum.TextXAlignment.Left
+	headerLabel.Text = "KONTROL MERKEZİ"
+	headerLabel.Parent = panelFrame
 
 	local closeButton = Instance.new("TextButton")
 	closeButton.Name = "CloseButton"
 	closeButton.AnchorPoint = Vector2.new(1, 0)
-	closeButton.Position = UDim2.new(1, -12, 0, 12)
+	closeButton.Position = UDim2.new(1, -14, 0, 14)
 	closeButton.Size = UDim2.fromOffset(32, 32)
 	closeButton.BackgroundColor3 = Theme.Colors.Surface
 	closeButton.Font = Theme.FontBold
@@ -176,8 +194,8 @@ function MainMenuUI.init()
 
 	local tabBar = Instance.new("ScrollingFrame")
 	tabBar.Name = "TabBar"
-	tabBar.Position = UDim2.new(0, 16, 0, 60)
-	tabBar.Size = UDim2.new(0, 130, 1, -76)
+	tabBar.Position = UDim2.new(0, 20, 0, 64)
+	tabBar.Size = UDim2.new(0, 150, 1, -84)
 	tabBar.BackgroundTransparency = 1
 	tabBar.BorderSizePixel = 0
 	tabBar.ScrollBarThickness = 4
@@ -192,12 +210,13 @@ function MainMenuUI.init()
 
 	local contentHostFrame = Instance.new("Frame")
 	contentHostFrame.Name = "ContentHost"
-	contentHostFrame.Position = UDim2.new(0, 162, 0, 60)
-	contentHostFrame.Size = UDim2.new(1, -178, 1, -76)
+	contentHostFrame.Position = UDim2.new(0, 186, 0, 64)
+	contentHostFrame.Size = UDim2.new(1, -206, 1, -84)
 	contentHostFrame.BackgroundColor3 = Theme.Colors.Surface
 	contentHostFrame.BorderSizePixel = 0
+	contentHostFrame.ClipsDescendants = true
 	contentHostFrame.Parent = panelFrame
-	createCorner(contentHostFrame, UDim.new(0, 10))
+	createCorner(contentHostFrame, UDim.new(0, 12))
 	contentHost = contentHostFrame
 
 	for _, id in ipairs(tabOrder) do

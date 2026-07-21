@@ -166,6 +166,7 @@ function PhoneUI.init()
 	phoneButton.Text = "📱"
 	phoneButton.Parent = screenGui
 	createCorner(phoneButton, UDim.new(1, 0))
+	Theme.applyGlass(phoneButton)
 	phoneButton.MouseButton1Click:Connect(function()
 		PhoneUI.toggle()
 	end)
@@ -175,10 +176,11 @@ function PhoneUI.init()
 	body.AnchorPoint = Vector2.new(0.5, 0.5)
 	body.Position = UDim2.new(0.5, 0, 1.5, 0)
 	body.Size = UDim2.new(0, 300, 0, 560)
-	body.BackgroundColor3 = Color3.fromRGB(10, 9, 9)
+	body.BackgroundColor3 = Color3.fromRGB(8, 7, 7)
 	body.BorderSizePixel = 0
 	body.Parent = screenGui
 	createCorner(body, UDim.new(0, 36))
+	Theme.applyGlass(body)
 	phoneBody = body
 
 	local screenFrame = Instance.new("Frame")
@@ -212,8 +214,8 @@ function PhoneUI.init()
 	title.Position = UDim2.new(0, 44, 0, 0)
 	title.Size = UDim2.new(1, -88, 1, 0)
 	title.BackgroundTransparency = 1
-	title.Font = Theme.FontBold
-	title.TextSize = 16
+	title.Font = Theme.FontBlack
+	title.TextSize = 17
 	title.TextColor3 = Theme.Colors.TextPrimary
 	title.Text = "Telefon"
 	title.Parent = topBarFrame

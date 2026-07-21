@@ -44,10 +44,15 @@ function CharacterTabUI.build(parent: Frame, CosmeticsClient: any)
 	end)
 
 	sectionLabel(parent, "TRAIL", 92)
-	local trailRow = Instance.new("Frame")
+	local trailRow = Instance.new("ScrollingFrame")
 	trailRow.Position = UDim2.new(0, 16, 0, 116)
 	trailRow.Size = UDim2.new(1, -32, 0, 36)
 	trailRow.BackgroundTransparency = 1
+	trailRow.BorderSizePixel = 0
+	trailRow.ScrollingDirection = Enum.ScrollingDirection.X
+	trailRow.ScrollBarThickness = 4
+	trailRow.CanvasSize = UDim2.new(0, 0, 0, 0)
+	trailRow.AutomaticCanvasSize = Enum.AutomaticSize.X
 	trailRow.Parent = parent
 	local trailLayout = Instance.new("UIListLayout")
 	trailLayout.FillDirection = Enum.FillDirection.Horizontal
@@ -71,10 +76,15 @@ function CharacterTabUI.build(parent: Frame, CosmeticsClient: any)
 	end
 
 	sectionLabel(parent, "LARP (900 Robux Gamepass)", 168)
-	local larpRow = Instance.new("Frame")
+	local larpRow = Instance.new("ScrollingFrame")
 	larpRow.Position = UDim2.new(0, 16, 0, 192)
 	larpRow.Size = UDim2.new(1, -32, 0, 36)
 	larpRow.BackgroundTransparency = 1
+	larpRow.BorderSizePixel = 0
+	larpRow.ScrollingDirection = Enum.ScrollingDirection.X
+	larpRow.ScrollBarThickness = 4
+	larpRow.CanvasSize = UDim2.new(0, 0, 0, 0)
+	larpRow.AutomaticCanvasSize = Enum.AutomaticSize.X
 	larpRow.Parent = parent
 	local larpLayout = Instance.new("UIListLayout")
 	larpLayout.FillDirection = Enum.FillDirection.Horizontal

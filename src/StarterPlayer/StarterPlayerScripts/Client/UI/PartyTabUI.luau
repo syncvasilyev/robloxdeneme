@@ -124,10 +124,15 @@ function PartyTabUI.build(parent: Frame, PartyClient: any)
 	musicLabel.Text = "Disco Müziği (DJ yetkisi gerekir)"
 	musicLabel.Parent = parent
 
-	local trackRow = Instance.new("Frame")
+	local trackRow = Instance.new("ScrollingFrame")
 	trackRow.Position = UDim2.new(0, 16, 0, 296)
 	trackRow.Size = UDim2.new(1, -32, 0, 36)
 	trackRow.BackgroundTransparency = 1
+	trackRow.BorderSizePixel = 0
+	trackRow.ScrollingDirection = Enum.ScrollingDirection.X
+	trackRow.ScrollBarThickness = 4
+	trackRow.CanvasSize = UDim2.new(0, 0, 0, 0)
+	trackRow.AutomaticCanvasSize = Enum.AutomaticSize.X
 	trackRow.Parent = parent
 
 	local trackLayout = Instance.new("UIListLayout")
