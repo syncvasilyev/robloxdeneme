@@ -2,26 +2,25 @@
 -- "/char <name>" copies another player's avatar appearance onto your own character (visual
 -- only — your name, data, and identity are untouched). "/unchar" restores your real appearance.
 -- Only usable inside Public Map / Disco (parts tagged "CharZone" in Studio; see ZoneTracker),
--- and staff (Mod gamepass owners) can't be impersonated to prevent staff-impersonation scams.
+-- and staff (Mods/Admins) can't be impersonated to prevent staff-impersonation scams.
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Remotes = require(ReplicatedStorage.Modules.Remotes)
-local GamepassIds = require(ReplicatedStorage.Modules.GamepassIds)
-local GamepassService = require(script.Parent.Parent.Data.GamepassService)
+local StaffService = require(script.Parent.Parent.Data.StaffService)
 local ZoneTracker = require(script.Parent.Parent.Data.ZoneTracker)
 
 local CharSystem = {}
 
 local CHAR_ZONE_TAG = "CharZone"
 
-local charFeedbackEvent = Remotes.getEvent("CharFeedback")
+local systemFeedbackEvent = Remotes.getEvent("SystemFeedback")
 
 local originalDescriptions: { [Player]: HumanoidDescription } = {}
 
 local function feedback(player: Player, message: string)
-	charFeedbackEvent:FireClient(player, message)
+	systemFeedbackEvent:FireClient(player, message)
 end
 
 local function findPlayerByPartialName(query: string): Player?
@@ -65,7 +64,7 @@ local function onChar(player: Player, targetQuery: string)
 		feedback(player, "Oyuncu bulunamadı.")
 		return
 	end
-	if GamepassService.playerOwns(target, GamepassIds.Mod) then
+	if StaffService.isMod(target) then
 		feedback(player, "Bu kullanıcı taklit edilemez.")
 		return
 	end

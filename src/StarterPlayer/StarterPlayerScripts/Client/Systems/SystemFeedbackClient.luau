@@ -1,17 +1,18 @@
 --!strict
--- Shows /char and /unchar results (errors, confirmations) as chat system messages.
+-- Shows short server-driven notices (e.g. /char, /unchar, mod command results) as chat system
+-- messages.
 
 local StarterGui = game:GetService("StarterGui")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Remotes = require(ReplicatedStorage.Modules.Remotes)
 
-local CharFeedbackClient = {}
+local SystemFeedbackClient = {}
 
-local charFeedbackEvent = Remotes.getEvent("CharFeedback")
+local systemFeedbackEvent = Remotes.getEvent("SystemFeedback")
 
-function CharFeedbackClient.init()
-	charFeedbackEvent.OnClientEvent:Connect(function(message: string)
+function SystemFeedbackClient.init()
+	systemFeedbackEvent.OnClientEvent:Connect(function(message: string)
 		pcall(function()
 			StarterGui:SetCore("ChatMakeSystemMessage", {
 				Text = message,
@@ -22,4 +23,4 @@ function CharFeedbackClient.init()
 	end)
 end
 
-return CharFeedbackClient
+return SystemFeedbackClient
