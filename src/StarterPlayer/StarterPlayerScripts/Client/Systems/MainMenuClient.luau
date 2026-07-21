@@ -1,10 +1,8 @@
 --!strict
--- Registers the + menu's default tabs. Each future system (Profile, Group, Party, ...) will
--- eventually own its tab's build function; for now unbuilt ones show a placeholder.
+-- Registers the + menu's tabs (the game-systems control center — Character, Group, Party,
+-- Audio, Premium — plus Profile/Duo/Settings, which are also reachable from the phone; see
+-- PhoneClient). Each tab reuses the same content builder the phone uses for shared ones.
 
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local Theme = require(ReplicatedStorage.Modules.Theme)
 local MainMenuUI = require(script.Parent.Parent.UI.MainMenu.MainMenuUI)
 local OnboardingClient = require(script.Parent.OnboardingClient)
 local ProfileClient = require(script.Parent.ProfileClient)
@@ -20,47 +18,9 @@ local CharacterTabUI = require(script.Parent.Parent.UI.CharacterTabUI)
 local PremiumTabUI = require(script.Parent.Parent.UI.PremiumTabUI)
 local DuoClient = require(script.Parent.DuoClient)
 local DuoTabUI = require(script.Parent.Parent.UI.DuoTabUI)
+local SettingsTabUI = require(script.Parent.Parent.UI.SettingsTabUI)
 
 local MainMenuClient = {}
-
-local function buildPlaceholder(text: string): (Frame) -> ()
-	return function(parent: Frame)
-		local label = Instance.new("TextLabel")
-		label.Size = UDim2.new(1, -32, 1, -32)
-		label.Position = UDim2.new(0, 16, 0, 16)
-		label.BackgroundTransparency = 1
-		label.Font = Theme.Font
-		label.TextSize = 16
-		label.TextColor3 = Theme.Colors.TextSecondary
-		label.TextWrapped = true
-		label.TextXAlignment = Enum.TextXAlignment.Left
-		label.TextYAlignment = Enum.TextYAlignment.Top
-		label.Text = text
-		label.Parent = parent
-	end
-end
-
-local function buildSettingsTab(parent: Frame)
-	local replayButton = Instance.new("TextButton")
-	replayButton.Name = "ReplayOnboardingButton"
-	replayButton.Position = UDim2.new(0, 16, 0, 16)
-	replayButton.Size = UDim2.new(1, -32, 0, 44)
-	replayButton.BackgroundColor3 = Theme.Colors.AccentRed
-	replayButton.Font = Theme.FontBold
-	replayButton.TextSize = 15
-	replayButton.TextColor3 = Theme.Colors.TextPrimary
-	replayButton.Text = "Onboarding'i Tekrar Gör"
-	replayButton.Parent = parent
-
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 8)
-	corner.Parent = replayButton
-
-	replayButton.MouseButton1Click:Connect(function()
-		MainMenuUI.close()
-		OnboardingClient.replay()
-	end)
-end
 
 function MainMenuClient.init()
 	MainMenuUI.init()
@@ -86,7 +46,9 @@ function MainMenuClient.init()
 	MainMenuUI.registerTab("PREMIUM", "Premium", function(parent: Frame)
 		PremiumTabUI.build(parent)
 	end)
-	MainMenuUI.registerTab("SETTINGS", "Ayarlar", buildSettingsTab)
+	MainMenuUI.registerTab("SETTINGS", "Ayarlar", function(parent: Frame)
+		SettingsTabUI.build(parent, OnboardingClient, MainMenuUI)
+	end)
 end
 
 return MainMenuClient
