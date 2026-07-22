@@ -12,4 +12,5 @@ return {
 	Larp = 0, -- 900 Robux
 	Party = 0, -- 97 Robux
 	Mod = 0, -- 460 Robux
+	RainbowStick = 0, -- 50 Robux
 }

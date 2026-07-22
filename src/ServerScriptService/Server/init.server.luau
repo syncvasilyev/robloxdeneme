@@ -5,6 +5,7 @@
 
 local SYSTEM_NAMES = {
 	{ name = "MapBuilder", folder = "Systems" },
+	{ name = "DiscoBuilder", folder = "Systems" },
 	{ name = "PlayerDataStore", folder = "Data" },
 	{ name = "GamepassService", folder = "Data" },
 	{ name = "PurchaseSystem", folder = "Systems" },

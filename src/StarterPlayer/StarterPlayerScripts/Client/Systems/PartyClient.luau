@@ -11,6 +11,7 @@ local closePartyEvent = Remotes.getEvent("ClosePartyHost")
 local setFriendsOnlyEvent = Remotes.getEvent("SetPartyFriendsOnly")
 local grantDjEvent = Remotes.getEvent("GrantPartyDj")
 local playTrackEvent = Remotes.getEvent("PlayPartyTrack")
+local playCustomSongEvent = Remotes.getEvent("PlayPartyCustomSong")
 local stopTrackEvent = Remotes.getEvent("StopPartyTrack")
 local partyStateEvent = Remotes.getEvent("PartyStateChanged")
 
@@ -40,6 +41,10 @@ end
 
 function PartyClient.playTrack(trackId: string)
 	playTrackEvent:FireServer(trackId)
+end
+
+function PartyClient.playCustomSong(rawId: string)
+	playCustomSongEvent:FireServer(rawId)
 end
 
 function PartyClient.stopTrack()

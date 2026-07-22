@@ -1,4 +1,5 @@
 --!strict
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Theme = require(ReplicatedStorage.Modules.Theme)
@@ -13,6 +14,8 @@ local function createCorner(parent: Instance, radius: UDim)
 end
 
 function PartyTabUI.build(parent: Frame, PartyClient: any)
+	local localPlayerName = Players.LocalPlayer.Name
+
 	local statusLabel = Instance.new("TextLabel")
 	statusLabel.Position = UDim2.new(0, 16, 0, 16)
 	statusLabel.Size = UDim2.new(1, -32, 0, 60)
@@ -33,7 +36,7 @@ function PartyTabUI.build(parent: Frame, PartyClient: any)
 	createButton.Font = Theme.FontBold
 	createButton.TextSize = 14
 	createButton.TextColor3 = Theme.Colors.TextPrimary
-	createButton.Text = "Parti Oluştur (max 23)"
+	createButton.Text = "Parti Oluştur (Disco'ya Işınlanırsın, max 23)"
 	createButton.Parent = parent
 	createCorner(createButton, UDim.new(0, 8))
 	createButton.MouseButton1Click:Connect(function()
@@ -113,8 +116,38 @@ function PartyTabUI.build(parent: Frame, PartyClient: any)
 		PartyClient.setFriendsOnly(friendsOnlyState)
 	end)
 
+	-- Host-only: grant DJ (music) permission to a member by name.
+	local djNameBox = Instance.new("TextBox")
+	djNameBox.Position = UDim2.new(0, 16, 0, 268)
+	djNameBox.Size = UDim2.new(1, -108, 0, 36)
+	djNameBox.BackgroundColor3 = Theme.Colors.SurfaceGlass
+	djNameBox.Font = Theme.Font
+	djNameBox.TextSize = 13
+	djNameBox.TextColor3 = Theme.Colors.TextPrimary
+	djNameBox.PlaceholderText = "Kullanıcı adı (DJ yetkisi ver)"
+	djNameBox.PlaceholderColor3 = Theme.Colors.TextSecondary
+	djNameBox.ClearTextOnFocus = false
+	djNameBox.Parent = parent
+	createCorner(djNameBox, UDim.new(0, 8))
+
+	local grantDjButton = Instance.new("TextButton")
+	grantDjButton.Position = UDim2.new(1, -84, 0, 268)
+	grantDjButton.Size = UDim2.new(0, 68, 0, 36)
+	grantDjButton.BackgroundColor3 = Theme.Colors.Surface
+	grantDjButton.Font = Theme.FontBold
+	grantDjButton.TextSize = 12
+	grantDjButton.TextColor3 = Theme.Colors.TextPrimary
+	grantDjButton.Text = "DJ Yap"
+	grantDjButton.Parent = parent
+	createCorner(grantDjButton, UDim.new(0, 8))
+	grantDjButton.MouseButton1Click:Connect(function()
+		if djNameBox.Text ~= "" then
+			PartyClient.grantDj(djNameBox.Text)
+		end
+	end)
+
 	local musicLabel = Instance.new("TextLabel")
-	musicLabel.Position = UDim2.new(0, 16, 0, 272)
+	musicLabel.Position = UDim2.new(0, 16, 0, 316)
 	musicLabel.Size = UDim2.new(1, -32, 0, 20)
 	musicLabel.BackgroundTransparency = 1
 	musicLabel.Font = Theme.Font
@@ -125,7 +158,7 @@ function PartyTabUI.build(parent: Frame, PartyClient: any)
 	musicLabel.Parent = parent
 
 	local trackRow = Instance.new("ScrollingFrame")
-	trackRow.Position = UDim2.new(0, 16, 0, 296)
+	trackRow.Position = UDim2.new(0, 16, 0, 340)
 	trackRow.Size = UDim2.new(1, -32, 0, 36)
 	trackRow.BackgroundTransparency = 1
 	trackRow.BorderSizePixel = 0
@@ -155,8 +188,38 @@ function PartyTabUI.build(parent: Frame, PartyClient: any)
 		end)
 	end
 
+	-- DJ booth: paste a raw Roblox audio ID/URL to play it directly (only works while DJ).
+	local customSongBox = Instance.new("TextBox")
+	customSongBox.Position = UDim2.new(0, 16, 0, 384)
+	customSongBox.Size = UDim2.new(1, -108, 0, 36)
+	customSongBox.BackgroundColor3 = Theme.Colors.SurfaceGlass
+	customSongBox.Font = Theme.Font
+	customSongBox.TextSize = 13
+	customSongBox.TextColor3 = Theme.Colors.TextPrimary
+	customSongBox.PlaceholderText = "🎧 Ses ID'si (rbxassetid://...)"
+	customSongBox.PlaceholderColor3 = Theme.Colors.TextSecondary
+	customSongBox.ClearTextOnFocus = false
+	customSongBox.Parent = parent
+	createCorner(customSongBox, UDim.new(0, 8))
+
+	local playCustomButton = Instance.new("TextButton")
+	playCustomButton.Position = UDim2.new(1, -84, 0, 384)
+	playCustomButton.Size = UDim2.new(0, 68, 0, 36)
+	playCustomButton.BackgroundColor3 = Theme.Colors.AccentRed
+	playCustomButton.Font = Theme.FontBold
+	playCustomButton.TextSize = 12
+	playCustomButton.TextColor3 = Theme.Colors.TextPrimary
+	playCustomButton.Text = "Çal"
+	playCustomButton.Parent = parent
+	createCorner(playCustomButton, UDim.new(0, 8))
+	playCustomButton.MouseButton1Click:Connect(function()
+		if customSongBox.Text ~= "" then
+			PartyClient.playCustomSong(customSongBox.Text)
+		end
+	end)
+
 	local stopMusicButton = Instance.new("TextButton")
-	stopMusicButton.Position = UDim2.new(0, 16, 0, 340)
+	stopMusicButton.Position = UDim2.new(0, 16, 0, 428)
 	stopMusicButton.Size = UDim2.new(1, -32, 0, 32)
 	stopMusicButton.BackgroundColor3 = Theme.Colors.Surface
 	stopMusicButton.Font = Theme.Font
@@ -172,6 +235,7 @@ function PartyTabUI.build(parent: Frame, PartyClient: any)
 	PartyClient.onStateChanged(function(state)
 		if not state then
 			statusLabel.Text = "Bir partide değilsin. (Parti kurmak için Party Gamepass gerekiyor.)"
+			customSongBox.Text = ""
 			return
 		end
 		if state.error then
@@ -189,6 +253,13 @@ function PartyTabUI.build(parent: Frame, PartyClient: any)
 		friendsOnlyButton.Text = if state.friendsOnly
 			then "Sadece Arkadaşlara Açık: Açık (Host - değiştir)"
 			else "Sadece Arkadaşlara Açık: Kapalı (Host - değiştir)"
+
+		local isDj = table.find(state.djs, localPlayerName) ~= nil
+		customSongBox.PlaceholderText = if isDj
+			then "🎧 Ses ID'si (rbxassetid://...)"
+			else "🎧 DJ yetkisi gerekiyor"
+		playCustomButton.Active = isDj
+		playCustomButton.BackgroundColor3 = if isDj then Theme.Colors.AccentRed else Theme.Colors.Surface
 	end)
 end
 

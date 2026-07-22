@@ -20,6 +20,8 @@ local SYSTEM_NAMES = {
 	"DuoInviteClient",
 	"NotificationsClient",
 	"PhoneClient",
+	"RainbowStickOfferClient",
+	"DanceMenuClient",
 }
 
 for _, name in ipairs(SYSTEM_NAMES) do

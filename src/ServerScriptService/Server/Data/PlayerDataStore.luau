@@ -34,6 +34,7 @@ local DEFAULT_DATA = {
 	-- per-server social tag, not saved player state.
 	party = {
 		hostCount = 0,
+		rainbowStickOffered = false,
 	},
 	duo = {
 		optIn = false,

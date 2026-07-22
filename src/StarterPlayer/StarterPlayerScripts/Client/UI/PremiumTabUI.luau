@@ -23,6 +23,7 @@ local GAMEPASS_LIST = {
 	{ key = "TrailFlying", name = "Trail (Flying)", price = "320 Robux" },
 	{ key = "Mod", name = "Mod", price = "460 Robux" },
 	{ key = "Larp", name = "LARP", price = "900 Robux" },
+	{ key = "RainbowStick", name = "Rainbow Stick (Disco)", price = "50 Robux" },
 }
 
 function PremiumTabUI.build(parent: Frame)
