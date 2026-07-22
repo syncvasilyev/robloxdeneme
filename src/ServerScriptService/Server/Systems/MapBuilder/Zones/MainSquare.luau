@@ -1,50 +1,113 @@
 --!strict
--- The open social hub: a colorful pastel plaza (not a gray city square) with a magical glowing
--- centerpiece, ringed by benches/lamps/trees, and the PublicMapSpawn marker OnboardingSystem
--- looks for (see findPublicMapSpawn in OnboardingSystem).
+-- The main hub: a large covered dark-metal hall (not an outdoor plaza) — dark floor/ceiling,
+-- support pillars, a red carpet path, cool ceiling light panels, and the PublicMapSpawn marker
+-- OnboardingSystem looks for (see findPublicMapSpawn in OnboardingSystem). Open on all sides
+-- (no enclosing walls) so it still reads as the map's big open social area, just under a proper
+-- covered structure instead of open sky.
 
 local MainSquare = {}
 
-local PETAL_COLORS = {
-	Color3.fromRGB(235, 180, 210),
-	Color3.fromRGB(200, 180, 235),
-	Color3.fromRGB(255, 210, 180),
-	Color3.fromRGB(180, 220, 235),
-}
+local HALL_SIZE = Vector3.new(92, 17, 92)
+
+local function buildCeilingLight(zone: Instance, position: Vector3)
+	local fixture = Instance.new("Part")
+	fixture.Name = "CeilingLightPanel"
+	fixture.Anchored = true
+	fixture.CanCollide = false
+	fixture.Size = Vector3.new(6, 0.3, 2.4)
+	-- Hangs just below the ceiling surface rather than centered on it, so the thin panel
+	-- doesn't poke into/overlap the ceiling part (the earlier version's z-fighting cause).
+	fixture.Position = position - Vector3.new(0, 0.3, 0)
+	fixture.Color = Color3.fromRGB(210, 225, 240)
+	fixture.Material = Enum.Material.Neon
+	fixture.Transparency = 0.1
+	fixture.Parent = zone
+
+	local light = Instance.new("SpotLight")
+	light.Face = Enum.NormalId.Bottom
+	light.Color = Color3.fromRGB(200, 220, 245)
+	light.Brightness = 3.5
+	light.Range = 28
+	light.Angle = 75
+	light.Parent = fixture
+end
 
 function MainSquare.build(container: Instance, PropLibrary: any, origin: CFrame)
 	local zone = Instance.new("Folder")
 	zone.Name = "MainSquare"
 	zone.Parent = container
 
-	local plaza = Instance.new("Part")
-	plaza.Name = "PlazaGround"
-	plaza.Anchored = true
-	plaza.Shape = Enum.PartType.Cylinder
-	plaza.Size = Vector3.new(1, 76, 76)
-	plaza.CFrame = origin * CFrame.new(0, 0.5, 0) * CFrame.Angles(0, 0, math.rad(90))
-	plaza.Color = Color3.fromRGB(225, 205, 232)
-	plaza.Material = Enum.Material.SmoothPlastic
-	plaza.Parent = zone
+	local floor = Instance.new("Part")
+	floor.Name = "HallFloor"
+	floor.Anchored = true
+	floor.Size = Vector3.new(HALL_SIZE.X, 1, HALL_SIZE.Z)
+	floor.CFrame = origin * CFrame.new(0, 0.5, 0)
+	floor.Color = Color3.fromRGB(40, 41, 46)
+	floor.Material = Enum.Material.DiamondPlate
+	floor.Parent = zone
 
-	-- A ring of soft pastel "petal" accent tiles around the centerpiece — reads as a flower/
-	-- mandala pattern from above instead of flat gray pavement.
-	for i = 0, 15 do
-		local angle = (i / 16) * math.pi * 2
-		local petalRadius = 22
-		local petal = Instance.new("Part")
-		petal.Name = "PetalTile"
-		petal.Anchored = true
-		petal.CanCollide = false
-		petal.Shape = Enum.PartType.Cylinder
-		petal.Size = Vector3.new(0.1, 4.2, 2.6)
-		petal.CFrame = origin
-			* CFrame.new(math.cos(angle) * petalRadius, 1.05, math.sin(angle) * petalRadius)
-			* CFrame.Angles(0, -angle, math.rad(90))
-		petal.Color = PETAL_COLORS[(i % #PETAL_COLORS) + 1]
-		petal.Material = Enum.Material.Neon
-		petal.Transparency = 0.25
-		petal.Parent = zone
+	local ceiling = Instance.new("Part")
+	ceiling.Name = "HallCeiling"
+	ceiling.Anchored = true
+	ceiling.CanCollide = false
+	ceiling.Size = Vector3.new(HALL_SIZE.X, 1, HALL_SIZE.Z)
+	ceiling.CFrame = origin * CFrame.new(0, HALL_SIZE.Y, 0)
+	ceiling.Color = Color3.fromRGB(24, 25, 28)
+	ceiling.Material = Enum.Material.Metal
+	ceiling.Parent = zone
+
+	-- Corner + mid-edge support pillars instead of full walls — keeps the hall open/walkable
+	-- from every direction while still reading as a real covered structure.
+	local pillarSpots = {
+		Vector3.new(-1, -1),
+		Vector3.new(1, -1),
+		Vector3.new(-1, 1),
+		Vector3.new(1, 1),
+		Vector3.new(-1, 0),
+		Vector3.new(1, 0),
+		Vector3.new(0, -1),
+		Vector3.new(0, 1),
+	}
+	for _, spot in ipairs(pillarSpots) do
+		local pillar = Instance.new("Part")
+		pillar.Name = "Pillar"
+		pillar.Anchored = true
+		pillar.Size = Vector3.new(2, HALL_SIZE.Y, 2)
+		pillar.CFrame = origin * CFrame.new(spot.X * (HALL_SIZE.X / 2 - 2), HALL_SIZE.Y / 2, spot.Y * (HALL_SIZE.Z / 2 - 2))
+		pillar.Color = Color3.fromRGB(30, 30, 34)
+		pillar.Material = Enum.Material.Metal
+		pillar.Parent = zone
+
+		local accentStrip = Instance.new("Part")
+		accentStrip.Name = "PillarAccent"
+		accentStrip.Anchored = true
+		accentStrip.CanCollide = false
+		accentStrip.Size = Vector3.new(0.15, HALL_SIZE.Y - 2, 2.2)
+		accentStrip.CFrame = pillar.CFrame * CFrame.new(1.1, 0, 0)
+		accentStrip.Color = Color3.fromRGB(150, 40, 60)
+		accentStrip.Material = Enum.Material.Neon
+		accentStrip.Parent = zone
+	end
+
+	-- Grid of ceiling light panels.
+	for row = -2, 2, 2 do
+		for col = -2, 2, 2 do
+			buildCeilingLight(zone, (origin * CFrame.new(row * 9, HALL_SIZE.Y - 0.5, col * 9)).Position)
+		end
+	end
+
+	-- Red carpet paths radiating from the center toward the spawn point and the main exits.
+	local carpetDirections = { Vector3.new(0, 1), Vector3.new(0, -1), Vector3.new(1, 0), Vector3.new(-1, 0) }
+	for _, dir in ipairs(carpetDirections) do
+		local carpet = Instance.new("Part")
+		carpet.Name = "CarpetStripe"
+		carpet.Anchored = true
+		carpet.CanCollide = false
+		carpet.Size = Vector3.new(if dir.X ~= 0 then 40 else 8, 0.15, if dir.X ~= 0 then 8 else 40)
+		carpet.CFrame = origin * CFrame.new(dir.X * 20, 1.08, dir.Y * 20)
+		carpet.Color = Color3.fromRGB(120, 20, 30)
+		carpet.Material = Enum.Material.Fabric
+		carpet.Parent = zone
 	end
 
 	local spawnMarker = Instance.new("Part")
@@ -53,87 +116,59 @@ function MainSquare.build(container: Instance, PropLibrary: any, origin: CFrame)
 	spawnMarker.CanCollide = false
 	spawnMarker.Transparency = 1
 	spawnMarker.Size = Vector3.new(6, 1, 6)
-	spawnMarker.CFrame = origin * CFrame.new(0, 1, 10)
+	spawnMarker.CFrame = origin * CFrame.new(0, 1.5, 14)
 	spawnMarker.Parent = zone
 
-	-- Centerpiece: a pastel pedestal with a magical glowing core and a ring of tiny orbiting
-	-- lights, readable from a distance as "the middle" without looking like a city fountain.
-	local centerBase = Instance.new("Part")
-	centerBase.Name = "CenterpieceBase"
-	centerBase.Anchored = true
-	centerBase.Shape = Enum.PartType.Cylinder
-	centerBase.Size = Vector3.new(1.2, 10, 10)
-	centerBase.CFrame = origin * CFrame.new(0, 0.6, 0) * CFrame.Angles(0, 0, math.rad(90))
-	centerBase.Color = Color3.fromRGB(200, 175, 220)
-	centerBase.Material = Enum.Material.SmoothPlastic
-	centerBase.Parent = zone
+	-- Centerpiece: a raised dark dais with a cool glowing edge ring — a hub marker, not a
+	-- fountain or a cute sculpture.
+	-- Floor's top surface is at Y=1 (see HallFloor above) — the dais sits flush on top of it,
+	-- not embedded in it, to avoid the flat-surface z-fighting from the previous version.
+	local dais = Instance.new("Part")
+	dais.Name = "CenterDais"
+	dais.Anchored = true
+	dais.Shape = Enum.PartType.Cylinder
+	dais.Size = Vector3.new(1.2, 11, 11)
+	dais.CFrame = origin * CFrame.new(0, 1.6, 0) * CFrame.Angles(0, 0, math.rad(90))
+	dais.Color = Color3.fromRGB(32, 33, 38)
+	dais.Material = Enum.Material.Metal
+	dais.Parent = zone
 
-	local glowCore = Instance.new("Part")
-	glowCore.Name = "GlowCore"
-	glowCore.Anchored = true
-	glowCore.CanCollide = false
-	glowCore.Shape = Enum.PartType.Ball
-	glowCore.Size = Vector3.new(2.6, 2.6, 2.6)
-	glowCore.CFrame = origin * CFrame.new(0, 2.2, 0)
-	glowCore.Color = Color3.fromRGB(255, 210, 235)
-	glowCore.Material = Enum.Material.Neon
-	glowCore.Parent = zone
-	local coreLight = Instance.new("PointLight")
-	coreLight.Color = Color3.fromRGB(255, 200, 235)
-	coreLight.Brightness = 3
-	coreLight.Range = 32
-	coreLight.Parent = glowCore
+	local daisRing = Instance.new("Part")
+	daisRing.Name = "DaisRing"
+	daisRing.Anchored = true
+	daisRing.CanCollide = false
+	daisRing.Shape = Enum.PartType.Cylinder
+	daisRing.Size = Vector3.new(0.3, 11.4, 11.4)
+	daisRing.CFrame = origin * CFrame.new(0, 2.35, 0) * CFrame.Angles(0, 0, math.rad(90))
+	daisRing.Color = Color3.fromRGB(210, 225, 245)
+	daisRing.Material = Enum.Material.Neon
+	daisRing.Transparency = 0.2
+	daisRing.Parent = zone
+	local daisLight = Instance.new("PointLight")
+	daisLight.Color = Color3.fromRGB(200, 220, 245)
+	daisLight.Brightness = 2
+	daisLight.Range = 26
+	daisLight.Parent = daisRing
 
-	for i = 0, 7 do
-		local angle = (i / 8) * math.pi * 2
-		local sparkle = Instance.new("Part")
-		sparkle.Name = "Sparkle"
-		sparkle.Anchored = true
-		sparkle.CanCollide = false
-		sparkle.Shape = Enum.PartType.Ball
-		sparkle.Size = Vector3.new(0.4, 0.4, 0.4)
-		sparkle.CFrame = origin * CFrame.new(math.cos(angle) * 3.6, 2.2 + math.sin(angle * 2) * 0.6, math.sin(angle) * 3.6)
-		sparkle.Color = PETAL_COLORS[(i % #PETAL_COLORS) + 1]
-		sparkle.Material = Enum.Material.Neon
-		sparkle.Parent = zone
-	end
-
-	-- Ring of lamps and trees around the plaza edge.
-	local ringRadius = 33
-	for i = 0, 11 do
-		local angle = (i / 12) * math.pi * 2
-		local point = origin * CFrame.new(math.cos(angle) * ringRadius, 0, math.sin(angle) * ringRadius)
-		if i % 3 == 0 then
-			PropLibrary.streetLamp(zone, point, 1)
-		elseif i % 3 == 1 then
-			PropLibrary.tree(zone, point, 1)
-		else
-			local benchCFrame = point * CFrame.Angles(0, angle + math.pi, 0)
-			PropLibrary.bench(zone, benchCFrame, (i % 3) + 1)
-			PropLibrary.trashCan(zone, point * CFrame.new(1.5, 0, 1.5))
-		end
-	end
-
-	-- Inner ring: smaller seating clusters closer to the centerpiece for groups to gather —
-	-- alternating benches and colorful couches so it's not all one shape.
-	for i = 0, 5 do
-		local angle = (i / 6) * math.pi * 2 + math.pi / 6
-		local point = origin * CFrame.new(math.cos(angle) * 16, 0, math.sin(angle) * 16)
-		local seatCFrame = point * CFrame.Angles(0, angle + math.pi, 0)
+	-- Ring of large chunky benches around the dais, facing in.
+	local benchRadius = 20
+	for i = 0, 9 do
+		local angle = (i / 10) * math.pi * 2
+		local point = origin * CFrame.new(math.cos(angle) * benchRadius, 0, math.sin(angle) * benchRadius)
 		if i % 2 == 0 then
-			PropLibrary.couch(zone, seatCFrame, i + 1)
+			PropLibrary.bench(zone, point * CFrame.Angles(0, angle + math.pi, 0), 2)
 		else
-			PropLibrary.bench(zone, seatCFrame, (i % 3) + 1)
+			PropLibrary.couch(zone, point * CFrame.Angles(0, angle + math.pi, 0), (i % 4) + 1)
 		end
-		PropLibrary.heartLight(zone, point * CFrame.new(-2, 0, 0))
 	end
 
-	-- Flower beds + a photo spot flanking the main path toward the park (+Z).
-	PropLibrary.flowerBed(zone, origin * CFrame.new(-6, 0, 34), Vector2.new(3, 6))
-	PropLibrary.flowerBed(zone, origin * CFrame.new(6, 0, 34), Vector2.new(3, 6))
-	PropLibrary.photoSpot(zone, origin * CFrame.new(0, 0, 28))
-	PropLibrary.neonEmoji(zone, origin * CFrame.new(-3.5, 3, 28.2) * CFrame.Angles(0, math.rad(180), 0), "✨")
-	PropLibrary.neonEmoji(zone, origin * CFrame.new(3.5, 3, 28.2) * CFrame.Angles(0, math.rad(180), 0), "⭐")
+	-- Wider outer ring of seating clusters + trash cans nearer the pillars.
+	for i = 0, 7 do
+		local angle = (i / 8) * math.pi * 2 + math.pi / 8
+		local point = origin * CFrame.new(math.cos(angle) * 34, 0, math.sin(angle) * 34)
+		PropLibrary.bench(zone, point * CFrame.Angles(0, angle + math.pi, 0), (i % 3) + 1)
+		PropLibrary.trashCan(zone, point * CFrame.new(2, 0, 2))
+	end
 
 	return zone
 end

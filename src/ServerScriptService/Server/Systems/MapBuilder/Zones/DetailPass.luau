@@ -43,11 +43,13 @@ function DetailPass.buildConnectors(container: Instance, PropLibrary: any, layou
 	zone.Name = "PathConnectors"
 	zone.Parent = container
 
-	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(0, 0, 34)).Position, (layout.Park * CFrame.new(0, 0, -32)).Position, 9)
-	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(-33, 0, -19)).Position, (layout.RainyNook * CFrame.new(8, 0, 4)).Position, 7)
-	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(0, 0, -30)).Position, (layout.PondBridge * CFrame.new(0, 0, 42)).Position, 9)
-	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(-24, 0, 12)).Position, (layout.PlushShop.Position), 7)
-	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(24, 0, -12)).Position, (layout.Cafeteria.Position), 7)
+	-- Main Square's edge is now at ~46 studs (a square hall, not the old 38-radius circle) — every
+	-- start point below was moved out to match so paths begin just outside the hall, not inside it.
+	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(0, 0, 48)).Position, (layout.Park * CFrame.new(0, 0, -34)).Position, 9)
+	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(-44, 0, -25)).Position, (layout.RainyNook * CFrame.new(8, 0, 4)).Position, 7)
+	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(0, 0, -48)).Position, (layout.PondBridge * CFrame.new(0, 0, 46)).Position, 9)
+	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(-43, 0, 21)).Position, (layout.PlushShop.Position), 7)
+	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(43, 0, -21)).Position, (layout.Cafeteria.Position), 7)
 
 	return zone
 end

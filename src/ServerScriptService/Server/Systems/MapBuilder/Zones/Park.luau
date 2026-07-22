@@ -1,67 +1,114 @@
 --!strict
--- A grassy park north of the main square: mixed seating (benches, picnic tables), flower beds,
--- and a denser tree line at the far edge that quietly leads into the pond/woods zone's mood.
+-- A secondary lounge hall north of the main hub — same dark-metal/quality-facility language as
+-- Main Square, but smaller, dimmer, and blue-accented instead of red, so it reads as a distinct
+-- room rather than a copy. Replaces the old outdoor grass park, which clashed with the rest of
+-- the map's indoor-facility direction.
 
 local Park = {}
+
+local HALL_SIZE = Vector3.new(64, 14, 64)
 
 function Park.build(container: Instance, PropLibrary: any, origin: CFrame)
 	local zone = Instance.new("Folder")
 	zone.Name = "Park"
 	zone.Parent = container
 
-	local grass = Instance.new("Part")
-	grass.Name = "ParkGround"
-	grass.Anchored = true
-	grass.Size = Vector3.new(70, 1, 70)
-	grass.CFrame = origin * CFrame.new(0, 0.5, 0)
-	grass.Color = Color3.fromRGB(44, 68, 42)
-	grass.Material = Enum.Material.Grass
-	grass.Parent = zone
+	local floor = Instance.new("Part")
+	floor.Name = "LoungeFloor"
+	floor.Anchored = true
+	floor.Size = Vector3.new(HALL_SIZE.X, 1, HALL_SIZE.Z)
+	floor.CFrame = origin * CFrame.new(0, 0.5, 0)
+	floor.Color = Color3.fromRGB(36, 38, 46)
+	floor.Material = Enum.Material.Metal
+	floor.Parent = zone
 
-	-- A winding-feeling path made of a few offset pavers rather than one straight strip.
-	local pathOffsets = { -30, -18, -6, 6, 18, 30 }
-	for i, z in ipairs(pathOffsets) do
-		local wiggle = math.sin(i) * 3
-		local paver = Instance.new("Part")
-		paver.Name = "Paver"
-		paver.Anchored = true
-		paver.Size = Vector3.new(6, 0.2, 13)
-		paver.CFrame = origin * CFrame.new(wiggle, 1.05, z)
-		paver.Color = Color3.fromRGB(210, 190, 165)
-		paver.Material = Enum.Material.WoodPlanks
-		paver.Parent = zone
+	local ceiling = Instance.new("Part")
+	ceiling.Name = "LoungeCeiling"
+	ceiling.Anchored = true
+	ceiling.CanCollide = false
+	ceiling.Size = Vector3.new(HALL_SIZE.X, 1, HALL_SIZE.Z)
+	ceiling.CFrame = origin * CFrame.new(0, HALL_SIZE.Y, 0)
+	ceiling.Color = Color3.fromRGB(20, 21, 26)
+	ceiling.Material = Enum.Material.Metal
+	ceiling.Parent = zone
+
+	local pillarSpots = { Vector3.new(-1, -1), Vector3.new(1, -1), Vector3.new(-1, 1), Vector3.new(1, 1) }
+	for _, spot in ipairs(pillarSpots) do
+		local pillar = Instance.new("Part")
+		pillar.Name = "Pillar"
+		pillar.Anchored = true
+		pillar.Size = Vector3.new(1.8, HALL_SIZE.Y, 1.8)
+		pillar.CFrame = origin * CFrame.new(spot.X * (HALL_SIZE.X / 2 - 2), HALL_SIZE.Y / 2, spot.Y * (HALL_SIZE.Z / 2 - 2))
+		pillar.Color = Color3.fromRGB(28, 28, 32)
+		pillar.Material = Enum.Material.Metal
+		pillar.Parent = zone
+
+		local accentStrip = Instance.new("Part")
+		accentStrip.Name = "PillarAccent"
+		accentStrip.Anchored = true
+		accentStrip.CanCollide = false
+		accentStrip.Size = Vector3.new(0.15, HALL_SIZE.Y - 2, 1.9)
+		accentStrip.CFrame = pillar.CFrame * CFrame.new(0.95, 0, 0)
+		accentStrip.Color = Color3.fromRGB(50, 110, 210)
+		accentStrip.Material = Enum.Material.Neon
+		accentStrip.Parent = zone
 	end
 
-	-- Picnic cluster.
-	PropLibrary.picnicTable(zone, origin * CFrame.new(-18, 0, -10))
-	PropLibrary.picnicTable(zone, origin * CFrame.new(-22, 0, 4) * CFrame.Angles(0, math.rad(30), 0))
-
-	-- Bench + flower reading nook.
-	PropLibrary.bench(zone, origin * CFrame.new(16, 0, -14) * CFrame.Angles(0, math.rad(160), 0), 1)
-	PropLibrary.bench(zone, origin * CFrame.new(20, 0, -8) * CFrame.Angles(0, math.rad(200), 0), 1)
-	PropLibrary.flowerBed(zone, origin * CFrame.new(18, 0, -18), Vector2.new(5, 3))
-
-	-- A quieter corner near the tree line for smaller groups to sit and talk.
-	PropLibrary.couch(zone, origin * CFrame.new(-14, 0, 26) * CFrame.Angles(0, math.rad(0), 0), 3)
-	PropLibrary.lanternPost(zone, origin * CFrame.new(-14, 0, 22))
-	PropLibrary.lanternPost(zone, origin * CFrame.new(-14, 0, 30))
-	PropLibrary.heartLight(zone, origin * CFrame.new(-17.5, 0, 26))
-	PropLibrary.neonEmoji(zone, origin * CFrame.new(16, 2.6, -18.3), "🌸")
-
-	-- Tree line + scattered bushes around the park's edge.
-	for i = 0, 9 do
-		local angle = (i / 10) * math.pi * 2
-		local radius = 31
-		local point = origin * CFrame.new(math.cos(angle) * radius, 0, math.sin(angle) * radius)
-		PropLibrary.tree(zone, point, (i % 2) + 1)
-		if i % 2 == 0 then
-			PropLibrary.bush(zone, point * CFrame.new(2, 0, 2), 1.2)
+	-- Cool blue ceiling light panels (hung just below the ceiling — see MainSquare's note on
+	-- avoiding flat-surface overlap).
+	for row = -1, 1 do
+		for col = -1, 1 do
+			local fixture = Instance.new("Part")
+			fixture.Name = "CeilingLightPanel"
+			fixture.Anchored = true
+			fixture.CanCollide = false
+			fixture.Size = Vector3.new(5, 0.3, 2)
+			fixture.CFrame = origin * CFrame.new(row * 14, HALL_SIZE.Y - 0.8, col * 14)
+			fixture.Color = Color3.fromRGB(150, 190, 230)
+			fixture.Material = Enum.Material.Neon
+			fixture.Transparency = 0.1
+			fixture.Parent = zone
+			local light = Instance.new("SpotLight")
+			light.Face = Enum.NormalId.Bottom
+			light.Color = Color3.fromRGB(140, 185, 230)
+			light.Brightness = 3
+			light.Range = 24
+			light.Angle = 75
+			light.Parent = fixture
 		end
 	end
 
-	PropLibrary.streetLamp(zone, origin * CFrame.new(-8, 0, 0), 2)
-	PropLibrary.streetLamp(zone, origin * CFrame.new(8, 0, 12), 2)
-	PropLibrary.trashCan(zone, origin * CFrame.new(-16, 0, -8))
+	-- Blue carpet cross, same idea as Main Square's red one, sitting flush on the floor.
+	for _, dir in ipairs({ Vector3.new(0, 1), Vector3.new(1, 0) }) do
+		local carpet = Instance.new("Part")
+		carpet.Name = "CarpetStripe"
+		carpet.Anchored = true
+		carpet.CanCollide = false
+		carpet.Size = if dir.X ~= 0 then Vector3.new(HALL_SIZE.X - 10, 0.15, 7) else Vector3.new(7, 0.15, HALL_SIZE.Z - 10)
+		carpet.CFrame = origin * CFrame.new(0, 1.08, 0)
+		carpet.Color = Color3.fromRGB(25, 55, 110)
+		carpet.Material = Enum.Material.Fabric
+		carpet.Parent = zone
+	end
+
+	-- Lounge seating clusters: mixed couches/benches around low tables, facing each other for
+	-- conversation rather than all facing one direction.
+	local clusterSpots = {
+		{ pos = Vector3.new(-18, 0, -14), angle = 40 },
+		{ pos = Vector3.new(18, 0, -14), angle = -40 },
+		{ pos = Vector3.new(-18, 0, 14), angle = 140 },
+		{ pos = Vector3.new(18, 0, 14), angle = -140 },
+	}
+	for i, cluster in ipairs(clusterSpots) do
+		local clusterCFrame = origin * CFrame.new(cluster.pos) * CFrame.Angles(0, math.rad(cluster.angle), 0)
+		PropLibrary.couch(zone, clusterCFrame, i)
+		PropLibrary.smallCafeTable(zone, clusterCFrame * CFrame.new(0, 0, 3.5) * CFrame.Angles(0, math.rad(180), 0))
+	end
+
+	PropLibrary.bench(zone, origin * CFrame.new(0, 0, -24) * CFrame.Angles(0, math.rad(180), 0), 2)
+	PropLibrary.bench(zone, origin * CFrame.new(0, 0, 24), 2)
+	PropLibrary.trashCan(zone, origin * CFrame.new(-26, 0, -26))
+	PropLibrary.trashCan(zone, origin * CFrame.new(26, 0, 26))
 
 	return zone
 end

@@ -46,27 +46,29 @@ function PropLibrary.bench(parent: Instance, cframe: CFrame, styleIndex: number?
 	}
 	local palette = palettes[((style - 1) % #palettes) + 1]
 
+	-- Sized chunkier than a realistic park bench on purpose — thin/skinny furniture was reading
+	-- as flimsy at map scale.
 	local model = newModel(parent, "Bench", cframe)
 	local seat = newPart({
-		Size = Vector3.new(5, 0.25, 1.6),
-		CFrame = cframe * CFrame.new(0, 1.5, 0),
+		Size = Vector3.new(5.8, 0.4, 2.1),
+		CFrame = cframe * CFrame.new(0, 1.6, 0),
 		Color = palette.seat,
 		Material = palette.material,
 		Name = "Seat",
 	})
 	seat.Parent = model
 	local back = newPart({
-		Size = Vector3.new(5, 1.1, 0.2),
-		CFrame = cframe * CFrame.new(0, 2.15, -0.7),
+		Size = Vector3.new(5.8, 1.5, 0.3),
+		CFrame = cframe * CFrame.new(0, 2.6, -0.9),
 		Color = palette.seat,
 		Material = palette.material,
 		Name = "Backrest",
 	})
 	back.Parent = model
-	for _, xOffset in ipairs({ -2.1, 2.1 }) do
+	for _, xOffset in ipairs({ -2.4, 2.4 }) do
 		local leg = newPart({
-			Size = Vector3.new(0.2, 1.5, 1.6),
-			CFrame = cframe * CFrame.new(xOffset, 0.75, 0),
+			Size = Vector3.new(0.3, 1.6, 2.1),
+			CFrame = cframe * CFrame.new(xOffset, 0.8, 0),
 			Color = palette.frame,
 			Material = Enum.Material.Metal,
 			Name = "Leg",
