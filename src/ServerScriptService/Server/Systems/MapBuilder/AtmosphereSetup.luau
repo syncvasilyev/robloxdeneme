@@ -9,12 +9,12 @@ local AtmosphereSetup = {}
 function AtmosphereSetup.apply()
 	Lighting.ClockTime = 21.5
 	Lighting.GeographicLatitude = 0
-	Lighting.Brightness = 3
+	Lighting.Brightness = 4
 	-- Ambient/OutdoorAmbient carry most of the base visibility (fixtures shouldn't be the only
 	-- thing keeping the map from going black) — brighter than a typical "night" preset on
 	-- purpose, per "gözü yormayacak kadar karanlık olsun".
-	Lighting.Ambient = Color3.fromRGB(95, 100, 128)
-	Lighting.OutdoorAmbient = Color3.fromRGB(105, 112, 138)
+	Lighting.Ambient = Color3.fromRGB(130, 136, 160)
+	Lighting.OutdoorAmbient = Color3.fromRGB(140, 146, 168)
 	Lighting.ColorShift_Top = Color3.fromRGB(90, 100, 135)
 	Lighting.ColorShift_Bottom = Color3.fromRGB(40, 38, 55)
 	Lighting.EnvironmentDiffuseScale = 0.6
