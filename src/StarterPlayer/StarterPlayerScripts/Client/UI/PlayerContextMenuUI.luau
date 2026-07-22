@@ -36,9 +36,6 @@ function PlayerContextMenuUI.show(target: Player, PlayerVoiceVolumeClient: any, 
 	backdrop.Text = ""
 	backdrop.AutoButtonColor = false
 	backdrop.Parent = screenGui
-	backdrop.MouseButton1Click:Connect(function()
-		screenGui:Destroy()
-	end)
 
 	local card = Instance.new("Frame")
 	card.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -47,6 +44,14 @@ function PlayerContextMenuUI.show(target: Player, PlayerVoiceVolumeClient: any, 
 	card.BackgroundColor3 = Theme.Colors.Surface
 	card.Parent = screenGui
 	createCorner(card, Theme.CornerRadius)
+	Theme.applyGlass(card)
+	Theme.popIn(card)
+
+	backdrop.MouseButton1Click:Connect(function()
+		Theme.popOut(card, function()
+			screenGui:Destroy()
+		end)
+	end)
 
 	local nameLabel = Instance.new("TextLabel")
 	nameLabel.Position = UDim2.new(0, 16, 0, 16)

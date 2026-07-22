@@ -1,6 +1,8 @@
 --!strict
 -- Shared visual theme constants (premium dark red / black / gray / white palette).
 
+local TweenService = game:GetService("TweenService")
+
 local Theme = {
 	Colors = {
 		Background = Color3.fromRGB(14, 12, 13),
@@ -51,6 +53,31 @@ function Theme.applyGlass(instance: GuiObject)
 	gradient.Parent = instance
 
 	return stroke, gradient
+end
+
+--- Soft pop-in: scales up from slightly small with a gentle overshoot, for popups/cards that
+--- appear all at once (context menus, invite toasts, onboarding). Call once, right after the
+--- instance is parented and fully built.
+function Theme.popIn(instance: GuiObject)
+	local scale = Instance.new("UIScale")
+	scale.Scale = 0.85
+	scale.Parent = instance
+	TweenService:Create(scale, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+end
+
+--- Soft pop-out: scales back down, then calls onComplete (typically :Destroy()) once finished.
+--- Use this instead of destroying a popup immediately so closing doesn't feel abrupt.
+function Theme.popOut(instance: GuiObject, onComplete: (() -> ())?)
+	local scale = instance:FindFirstChildOfClass("UIScale")
+	if not scale then
+		scale = Instance.new("UIScale")
+		scale.Parent = instance
+	end
+	local tween = TweenService:Create(scale, TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.In), { Scale = 0.85 })
+	if onComplete then
+		tween.Completed:Connect(onComplete)
+	end
+	tween:Play()
 end
 
 return Theme

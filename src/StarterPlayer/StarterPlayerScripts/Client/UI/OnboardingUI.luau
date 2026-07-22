@@ -64,6 +64,8 @@ function OnboardingUI.show(onComplete: () -> ())
 	card.BorderSizePixel = 0
 	card.Parent = backdrop
 	createCorner(card, Theme.CornerRadius)
+	Theme.applyGlass(card)
+	Theme.popIn(card)
 
 	local accentBar = Instance.new("Frame")
 	accentBar.Name = "AccentBar"

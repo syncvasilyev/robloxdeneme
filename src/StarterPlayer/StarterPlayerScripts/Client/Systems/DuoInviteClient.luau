@@ -37,6 +37,8 @@ local function showInvitePopup(fromName: string)
 	card.BackgroundColor3 = Theme.Colors.Surface
 	card.Parent = screenGui
 	createCorner(card, Theme.CornerRadius)
+	Theme.applyGlass(card)
+	Theme.popIn(card)
 
 	local label = Instance.new("TextLabel")
 	label.Position = UDim2.new(0, 16, 0, 12)
@@ -74,11 +76,15 @@ local function showInvitePopup(fromName: string)
 
 	acceptButton.MouseButton1Click:Connect(function()
 		DuoClient.respondInvite(fromName, true)
-		screenGui:Destroy()
+		Theme.popOut(card, function()
+			screenGui:Destroy()
+		end)
 	end)
 	declineButton.MouseButton1Click:Connect(function()
 		DuoClient.respondInvite(fromName, false)
-		screenGui:Destroy()
+		Theme.popOut(card, function()
+			screenGui:Destroy()
+		end)
 	end)
 end
 
