@@ -4,6 +4,7 @@
 -- Check the Output window for "init.server:" lines if something isn't working.
 
 local SYSTEM_NAMES = {
+	{ name = "MapBuilder", folder = "Systems" },
 	{ name = "PlayerDataStore", folder = "Data" },
 	{ name = "GamepassService", folder = "Data" },
 	{ name = "PurchaseSystem", folder = "Systems" },
