@@ -1,22 +1,52 @@
 --!strict
--- Cinematic night mood: blue/purple sky, soft far-reaching fog (never hides the map), warm
--- practical lights doing most of the actual illumination so it reads as lit, not just dark.
+-- Dreamy stylized-hangout night mood: navy/purple/soft-pink sky, not a realistic/cool-toned
+-- night. Fully bright enough to see the whole map — this is meant to read as "cozy and magical",
+-- never dark or moody.
 
+local Workspace = game:GetService("Workspace")
 local Lighting = game:GetService("Lighting")
 
 local AtmosphereSetup = {}
+
+local CLOUD_SPECS = {
+	{ position = Vector3.new(-60, 340, 40), size = Vector3.new(140, 6, 70), color = Color3.fromRGB(255, 210, 235) },
+	{ position = Vector3.new(90, 360, -50), size = Vector3.new(120, 6, 60), color = Color3.fromRGB(210, 190, 255) },
+	{ position = Vector3.new(10, 380, 120), size = Vector3.new(160, 6, 80), color = Color3.fromRGB(230, 220, 255) },
+	{ position = Vector3.new(-40, 350, -140), size = Vector3.new(130, 6, 65), color = Color3.fromRGB(255, 225, 240) },
+}
+
+local function buildSoftClouds()
+	local folder = Instance.new("Folder")
+	folder.Name = "SoftClouds"
+	folder.Parent = Workspace
+
+	for i, spec in ipairs(CLOUD_SPECS) do
+		local cloud = Instance.new("Part")
+		cloud.Name = "Cloud" .. i
+		cloud.Anchored = true
+		cloud.CanCollide = false
+		cloud.CanQuery = false
+		cloud.Shape = Enum.PartType.Ball
+		cloud.Size = spec.size
+		cloud.Position = spec.position
+		cloud.Color = spec.color
+		cloud.Material = Enum.Material.Neon
+		cloud.Transparency = 0.75
+		cloud.Parent = folder
+	end
+end
 
 function AtmosphereSetup.apply()
 	Lighting.ClockTime = 21.5
 	Lighting.GeographicLatitude = 0
 	Lighting.Brightness = 4
 	-- Ambient/OutdoorAmbient carry most of the base visibility (fixtures shouldn't be the only
-	-- thing keeping the map from going black) — brighter than a typical "night" preset on
-	-- purpose, per "gözü yormayacak kadar karanlık olsun".
-	Lighting.Ambient = Color3.fromRGB(130, 136, 160)
-	Lighting.OutdoorAmbient = Color3.fromRGB(140, 146, 168)
-	Lighting.ColorShift_Top = Color3.fromRGB(90, 100, 135)
-	Lighting.ColorShift_Bottom = Color3.fromRGB(40, 38, 55)
+	-- thing keeping the map from going black) — brighter than a typical "night" preset, and
+	-- tinted purple/pink rather than cool blue-grey for the "dreamy" mood.
+	Lighting.Ambient = Color3.fromRGB(150, 130, 175)
+	Lighting.OutdoorAmbient = Color3.fromRGB(160, 142, 188)
+	Lighting.ColorShift_Top = Color3.fromRGB(120, 95, 165)
+	Lighting.ColorShift_Bottom = Color3.fromRGB(70, 50, 90)
 	Lighting.EnvironmentDiffuseScale = 0.6
 	Lighting.EnvironmentSpecularScale = 0.4
 	Lighting.GlobalShadows = true
@@ -24,36 +54,36 @@ function AtmosphereSetup.apply()
 	Lighting.ExposureCompensation = 0.25
 
 	local sky = Instance.new("Sky")
-	sky.Name = "NightSky"
-	sky.StarCount = 3000
+	sky.Name = "DreamySky"
+	sky.StarCount = 3500
 	sky.CelestialBodiesShown = true
-	sky.MoonAngularSize = 14
+	sky.MoonAngularSize = 16
 	sky.SunAngularSize = 0
 	sky.Parent = Lighting
 
 	local atmosphere = Instance.new("Atmosphere")
-	atmosphere.Name = "NightAtmosphere"
-	atmosphere.Density = 0.12
+	atmosphere.Name = "DreamyAtmosphere"
+	atmosphere.Density = 0.1
 	atmosphere.Offset = 0.1
-	atmosphere.Color = Color3.fromRGB(170, 180, 210)
-	atmosphere.Decay = Color3.fromRGB(100, 95, 130)
-	atmosphere.Glare = 0.1
-	atmosphere.Haze = 0.2
+	atmosphere.Color = Color3.fromRGB(225, 190, 230)
+	atmosphere.Decay = Color3.fromRGB(110, 80, 140)
+	atmosphere.Glare = 0.12
+	atmosphere.Haze = 0.18
 	atmosphere.Parent = Lighting
 
 	local colorCorrection = Instance.new("ColorCorrectionEffect")
-	colorCorrection.Name = "NightGrade"
-	colorCorrection.TintColor = Color3.fromRGB(230, 236, 255)
-	colorCorrection.Contrast = 0.04
-	colorCorrection.Saturation = 0.05
-	colorCorrection.Brightness = 0.06
+	colorCorrection.Name = "DreamyGrade"
+	colorCorrection.TintColor = Color3.fromRGB(255, 225, 245)
+	colorCorrection.Contrast = 0.06
+	colorCorrection.Saturation = 0.18
+	colorCorrection.Brightness = 0.07
 	colorCorrection.Parent = Lighting
 
 	local bloom = Instance.new("BloomEffect")
 	bloom.Name = "SoftBloom"
-	bloom.Intensity = 0.45
-	bloom.Size = 20
-	bloom.Threshold = 1.4
+	bloom.Intensity = 0.5
+	bloom.Size = 22
+	bloom.Threshold = 1.35
 	bloom.Parent = Lighting
 
 	local depthOfField = Instance.new("DepthOfFieldEffect")
@@ -63,6 +93,8 @@ function AtmosphereSetup.apply()
 	depthOfField.InFocusRadius = 60
 	depthOfField.NearIntensity = 0
 	depthOfField.Parent = Lighting
+
+	buildSoftClouds()
 end
 
 return AtmosphereSetup

@@ -27,8 +27,8 @@ function Park.build(container: Instance, PropLibrary: any, origin: CFrame)
 		paver.Anchored = true
 		paver.Size = Vector3.new(6, 0.2, 13)
 		paver.CFrame = origin * CFrame.new(wiggle, 1.05, z)
-		paver.Color = Color3.fromRGB(120, 112, 100)
-		paver.Material = Enum.Material.Concrete
+		paver.Color = Color3.fromRGB(210, 190, 165)
+		paver.Material = Enum.Material.WoodPlanks
 		paver.Parent = zone
 	end
 
@@ -42,9 +42,11 @@ function Park.build(container: Instance, PropLibrary: any, origin: CFrame)
 	PropLibrary.flowerBed(zone, origin * CFrame.new(18, 0, -18), Vector2.new(5, 3))
 
 	-- A quieter corner near the tree line for smaller groups to sit and talk.
-	PropLibrary.bench(zone, origin * CFrame.new(-14, 0, 26) * CFrame.Angles(0, math.rad(0), 0), 2)
+	PropLibrary.couch(zone, origin * CFrame.new(-14, 0, 26) * CFrame.Angles(0, math.rad(0), 0), 3)
 	PropLibrary.lanternPost(zone, origin * CFrame.new(-14, 0, 22))
 	PropLibrary.lanternPost(zone, origin * CFrame.new(-14, 0, 30))
+	PropLibrary.heartLight(zone, origin * CFrame.new(-17.5, 0, 26))
+	PropLibrary.neonEmoji(zone, origin * CFrame.new(16, 2.6, -18.3), "🌸")
 
 	-- Tree line + scattered bushes around the park's edge.
 	for i = 0, 9 do

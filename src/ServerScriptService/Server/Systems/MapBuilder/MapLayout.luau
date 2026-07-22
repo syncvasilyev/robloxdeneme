@@ -4,14 +4,12 @@
 
 local MapLayout = {}
 
--- Zones pulled in much closer to the square than the first pass — that version left 50-80 studs
--- of empty walking between areas, which read as "the map is huge and empty" rather than one
--- cohesive, walkable cluster. Distances below are chosen so each zone's own footprint (Park is
--- 70x70, PondBridge's tree ring is ~44 radius, RainyStreet is 74 long) still clears the main
--- plaza's 38-stud radius with a ~10-stud path gap, not overlapping it.
+-- Zones pulled in close to the square — a stylized hangout cluster, not a spread-out city, with
+-- each zone's own footprint (Park is 70x70, PondBridge's tree ring is ~44 radius, RainyNook's
+-- pavilion is 9-radius) still clearing the main area's 38-stud radius with a path gap.
 MapLayout.MainSquare = CFrame.new(0, 0, 0)
 MapLayout.Park = CFrame.new(0, 0, 85)
-MapLayout.RainyStreet = CFrame.new(90, 0, 0) * CFrame.Angles(0, math.rad(90), 0)
+MapLayout.RainyNook = CFrame.new(-70, 0, -40)
 MapLayout.PlushShop = CFrame.new(-52, 0, 18) * CFrame.Angles(0, math.rad(115), 0)
 MapLayout.Cafeteria = CFrame.new(52, 0, -18) * CFrame.Angles(0, math.rad(-65), 0)
 MapLayout.PondBridge = CFrame.new(0, 0, -92)

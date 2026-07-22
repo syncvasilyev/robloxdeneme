@@ -490,4 +490,169 @@ function PropLibrary.buildingShell(
 	return model, doorCFrame
 end
 
+--- A small standing heart-shaped light — two overlapping glowing lobes on a low post, cute
+--- decor for the stylized hangout look (see madde: "kalp şeklinde ışıklar").
+function PropLibrary.heartLight(parent: Instance, cframe: CFrame): Model
+	local model = newModel(parent, "HeartLight", cframe)
+	local post = newPart({
+		Size = Vector3.new(0.2, 2, 0.2),
+		CFrame = cframe * CFrame.new(0, 1, 0),
+		Color = Color3.fromRGB(230, 200, 235),
+		Material = Enum.Material.Neon,
+		CanCollide = false,
+		Name = "Post",
+	})
+	post.Parent = model
+	for _, xOffset in ipairs({ -0.28, 0.28 }) do
+		local lobe = newPart({
+			Size = Vector3.new(0.55, 0.55, 0.4),
+			CFrame = cframe * CFrame.new(xOffset, 2.15, 0),
+			Color = Color3.fromRGB(255, 110, 160),
+			Material = Enum.Material.Neon,
+			Shape = Enum.PartType.Ball,
+			CanCollide = false,
+			Name = "Lobe",
+		})
+		lobe.Parent = model
+	end
+	local tip = newPart({
+		Size = Vector3.new(0.4, 0.4, 0.4),
+		CFrame = cframe * CFrame.new(0, 1.85, 0),
+		Color = Color3.fromRGB(255, 110, 160),
+		Material = Enum.Material.Neon,
+		Shape = Enum.PartType.Ball,
+		CanCollide = false,
+		Name = "Tip",
+	})
+	tip.Parent = model
+	local light = Instance.new("PointLight")
+	light.Color = Color3.fromRGB(255, 140, 190)
+	light.Brightness = 1.6
+	light.Range = 12
+	light.Parent = tip
+	model.PrimaryPart = post
+	return model
+end
+
+--- A colorful cushioned couch — softer/rounder than the bench styles, for cozy corners.
+function PropLibrary.couch(parent: Instance, cframe: CFrame, colorIndex: number?): Model
+	local palettes = {
+		Color3.fromRGB(230, 140, 175),
+		Color3.fromRGB(150, 140, 230),
+		Color3.fromRGB(240, 175, 120),
+		Color3.fromRGB(130, 210, 195),
+	}
+	local color = palettes[((colorIndex or 1) - 1) % #palettes + 1]
+
+	local model = newModel(parent, "Couch", cframe)
+	local base = newPart({
+		Size = Vector3.new(5.5, 1.3, 2.2),
+		CFrame = cframe * CFrame.new(0, 0.9, 0),
+		Color = color,
+		Material = Enum.Material.Fabric,
+		Name = "Base",
+	})
+	base.Parent = model
+	local back = newPart({
+		Size = Vector3.new(5.5, 1.5, 0.6),
+		CFrame = cframe * CFrame.new(0, 1.9, -0.85),
+		Color = color,
+		Material = Enum.Material.Fabric,
+		Name = "Back",
+	})
+	back.Parent = model
+	for _, xOffset in ipairs({ -2.6, 2.6 }) do
+		local armrest = newPart({
+			Size = Vector3.new(0.5, 1, 2.2),
+			CFrame = cframe * CFrame.new(xOffset, 1.5, 0),
+			Color = color,
+			Material = Enum.Material.Fabric,
+			Name = "Armrest",
+		})
+		armrest.Parent = model
+	end
+	for _, xOffset in ipairs({ -1.3, 0, 1.3 }) do
+		local cushion = newPart({
+			Size = Vector3.new(1.5, 0.4, 1.9),
+			CFrame = cframe * CFrame.new(xOffset, 1.65, 0.05),
+			Color = color:Lerp(Color3.new(1, 1, 1), 0.15),
+			Material = Enum.Material.Fabric,
+			Name = "Cushion",
+		})
+		cushion.Parent = model
+	end
+	model.PrimaryPart = base
+	return model
+end
+
+--- A small glowing sign displaying an emoji shape (star/heart/sparkle) — the simplest reliable
+--- way to get a readable "neon shape" without needing a custom mesh asset.
+function PropLibrary.neonEmoji(parent: Instance, cframe: CFrame, emoji: string, glowColor: Color3?): Model
+	local model = newModel(parent, "NeonEmoji", cframe)
+	local plaque = newPart({
+		Size = Vector3.new(1.4, 1.4, 0.15),
+		CFrame = cframe,
+		Color = glowColor or Color3.fromRGB(255, 180, 220),
+		Material = Enum.Material.Neon,
+		CanCollide = false,
+		Name = "Plaque",
+	})
+	plaque.Transparency = 0.3
+	plaque.Parent = model
+	local gui = Instance.new("SurfaceGui")
+	gui.Face = Enum.NormalId.Front
+	gui.Parent = plaque
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.fromScale(1, 1)
+	label.BackgroundTransparency = 1
+	label.TextScaled = true
+	label.Text = emoji
+	label.Parent = gui
+	local light = Instance.new("PointLight")
+	light.Color = glowColor or Color3.fromRGB(255, 180, 220)
+	light.Brightness = 1.4
+	light.Range = 10
+	light.Parent = plaque
+	return model
+end
+
+--- A small framed "photo spot" — a decorative arch with flowers either side, meant purely as a
+--- pretty backdrop for players to stand in front of and take a screenshot.
+function PropLibrary.photoSpot(parent: Instance, cframe: CFrame): Model
+	local model = newModel(parent, "PhotoSpot", cframe)
+	for _, xOffset in ipairs({ -2.2, 2.2 }) do
+		local post = newPart({
+			Size = Vector3.new(0.3, 5, 0.3),
+			CFrame = cframe * CFrame.new(xOffset, 2.5, 0),
+			Color = Color3.fromRGB(235, 210, 230),
+			Material = Enum.Material.Neon,
+			Name = "Post",
+		})
+		post.Parent = model
+	end
+	local arch = newPart({
+		Size = Vector3.new(4.6, 0.3, 0.3),
+		CFrame = cframe * CFrame.new(0, 5, 0),
+		Color = Color3.fromRGB(235, 210, 230),
+		Material = Enum.Material.Neon,
+		CanCollide = false,
+		Name = "ArchTop",
+	})
+	arch.Parent = model
+	for _, offset in ipairs({ Vector3.new(-2.2, 4.4, 0), Vector3.new(2.2, 4.4, 0) }) do
+		local flowerPuff = newPart({
+			Size = Vector3.new(0.8, 0.8, 0.8),
+			CFrame = cframe * CFrame.new(offset),
+			Color = Color3.fromRGB(255, 170, 200),
+			Material = Enum.Material.Neon,
+			Shape = Enum.PartType.Ball,
+			CanCollide = false,
+			Name = "FlowerPuff",
+		})
+		flowerPuff.Parent = model
+	end
+	model.PrimaryPart = arch
+	return model
+end
+
 return PropLibrary

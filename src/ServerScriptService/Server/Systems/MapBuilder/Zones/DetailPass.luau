@@ -44,7 +44,7 @@ function DetailPass.buildConnectors(container: Instance, PropLibrary: any, layou
 	zone.Parent = container
 
 	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(0, 0, 34)).Position, (layout.Park * CFrame.new(0, 0, -32)).Position, 9)
-	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(30, 0, 0)).Position, (layout.RainyStreet * CFrame.new(0, 0, -34)).Position, 9)
+	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(-33, 0, -19)).Position, (layout.RainyNook * CFrame.new(8, 0, 4)).Position, 7)
 	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(0, 0, -30)).Position, (layout.PondBridge * CFrame.new(0, 0, 42)).Position, 9)
 	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(-24, 0, 12)).Position, (layout.PlushShop.Position), 7)
 	buildPath(zone, PropLibrary, (layout.MainSquare * CFrame.new(24, 0, -12)).Position, (layout.Cafeteria.Position), 7)
@@ -59,7 +59,7 @@ function DetailPass.buildSignposts(container: Instance, PropLibrary: any, origin
 
 	local signSpots = {
 		{ offset = Vector3.new(4, 0, 30), text = "🌳 PARK" },
-		{ offset = Vector3.new(28, 0, 4), text = "🌧️ YAĞMUR SOKAĞI" },
+		{ offset = Vector3.new(-20, 0, -10), text = "🌧️ Yağmurlu Köşe" },
 		{ offset = Vector3.new(-4, 0, -28), text = "🌊 GÖLET" },
 		{ offset = Vector3.new(-26, 0, 8), text = "🧸 PATİLİ DOSTLAR" },
 		{ offset = Vector3.new(26, 0, -8), text = "☕ KAFETERYA" },
