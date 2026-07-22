@@ -62,7 +62,7 @@ function MapBuilder.init()
 	HiddenAreas.buildShopAlley(mapFolder, PropLibrary, MapLayout.PlushShop)
 	HiddenAreas.buildSecretHideout(mapFolder, PropLibrary, MapLayout.PondBridge)
 
-	DetailPass.buildConnectors(mapFolder, MapLayout)
+	DetailPass.buildConnectors(mapFolder, PropLibrary, MapLayout)
 	DetailPass.buildSignposts(mapFolder, PropLibrary, MapLayout.MainSquare)
 end
 
