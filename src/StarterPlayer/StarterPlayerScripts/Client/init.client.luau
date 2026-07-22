@@ -7,6 +7,7 @@ local SYSTEM_NAMES = {
 	"OnboardingClient",
 	"MainMenuClient",
 	"NametagClient",
+	"ModPlaytimeClient",
 	"PartyMusicClient",
 	"AmbientMusicClient",
 	"SystemFeedbackClient",

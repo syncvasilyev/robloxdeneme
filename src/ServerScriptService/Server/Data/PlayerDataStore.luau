@@ -34,6 +34,7 @@ local DEFAULT_DATA = {
 	-- per-server social tag, not saved player state.
 	party = {
 		hostCount = 0,
+		totalGuestJoins = 0, -- cumulative joins across every party this player has hosted (see PARTY KING title)
 		rainbowStickOffered = false,
 	},
 	duo = {

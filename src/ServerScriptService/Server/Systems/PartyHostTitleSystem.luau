@@ -1,11 +1,14 @@
 --!strict
--- Grants a "PARTY HOST" title once a player has hosted 20 parties (see PartySystem, which
--- increments party.hostCount whenever a host closes/leaves their own party). The title is
--- purely derived from hostCount — no separate "unlocked" flag needed — and only shown while
--- the player is in Public Map / Disco (parts tagged "CharZone" in Studio; see ZoneTracker).
+-- Grants party-hosting titles, shown only while the player is in Public Map / Disco (parts
+-- tagged "CharZone" in Studio; see ZoneTracker):
+--   PARTY HOST — hosted 20 parties (PartySystem increments party.hostCount when a host
+--                closes/leaves their own party).
+--   PARTY KING — a higher, more prestigious title: 200 cumulative guest joins across every
+--                party this player has hosted (PartySystem increments party.totalGuestJoins
+--                each time someone joins one of their parties). Takes precedence over PARTY
+--                HOST when both are earned — a player only ever shows one title at a time.
 --
--- More thresholds (50/100/250/500 parties) can be added to TITLE_THRESHOLDS later once their
--- names are decided.
+-- Both titles are purely derived from PlayerDataStore counters — no separate "unlocked" flag.
 
 local Players = game:GetService("Players")
 
@@ -17,18 +20,17 @@ local PartyHostTitleSystem = {}
 local CHAR_ZONE_TAG = "CharZone"
 local CHECK_INTERVAL_SECONDS = 2
 
-local TITLE_THRESHOLDS = {
-	{ count = 20, name = "PARTY HOST" },
-}
+local PARTY_HOST_THRESHOLD = 20
+local PARTY_KING_THRESHOLD = 200
 
-local function titleForHostCount(hostCount: number): string?
-	local best: string? = nil
-	for _, tier in ipairs(TITLE_THRESHOLDS) do
-		if hostCount >= tier.count then
-			best = tier.name
-		end
+local function titleFor(data: { [any]: any }): string?
+	if data.party.totalGuestJoins >= PARTY_KING_THRESHOLD then
+		return "👑 PARTY KING"
 	end
-	return best
+	if data.party.hostCount >= PARTY_HOST_THRESHOLD then
+		return "👑 PARTY HOST"
+	end
+	return nil
 end
 
 local function updatePlayer(player: Player)
@@ -37,7 +39,7 @@ local function updatePlayer(player: Player)
 		return
 	end
 
-	local title = titleForHostCount(data.party.hostCount)
+	local title = titleFor(data)
 	if title and ZoneTracker.isPlayerInTag(player, CHAR_ZONE_TAG) then
 		player:SetAttribute("PartyHostTitle", title)
 	else

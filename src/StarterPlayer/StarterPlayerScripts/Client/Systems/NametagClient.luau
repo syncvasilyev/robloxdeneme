@@ -10,6 +10,11 @@ local Theme = require(ReplicatedStorage.Modules.Theme)
 
 local NametagClient = {}
 
+-- Populated per-player in attachNametag; ModPlaytimeClient calls NametagClient.setPlaytimeText
+-- to fill these in for whoever the local player has moderator visibility into (see that module —
+-- the server already refuses this data to non-mods, so a label just stays blank for everyone else).
+local playtimeLabels: { [Player]: TextLabel } = {}
+
 local function attachNametag(player: Player, character: Model)
 	local humanoid = character:WaitForChild("Humanoid", 5)
 	if not (humanoid and humanoid:IsA("Humanoid")) then
@@ -25,7 +30,7 @@ local function attachNametag(player: Player, character: Model)
 
 	local billboard = Instance.new("BillboardGui")
 	billboard.Name = "NicknameTag"
-	billboard.Size = UDim2.fromOffset(200, 58)
+	billboard.Size = UDim2.fromOffset(200, 72)
 	billboard.StudsOffset = Vector3.new(0, 2.4, 0)
 	billboard.AlwaysOnTop = true
 	billboard.Parent = head
@@ -52,6 +57,27 @@ local function attachNametag(player: Player, character: Model)
 	label.Text = (player:GetAttribute("Nickname") :: string?) or player.DisplayName
 	label.TextColor3 = (player:GetAttribute("NicknameColor") :: Color3?) or Theme.Colors.TextPrimary
 	label.Parent = billboard
+
+	-- Mod-only: filled in by ModPlaytimeClient for whichever players the local viewer has
+	-- moderator visibility into. Empty/invisible for everyone else.
+	local playtimeLabel = Instance.new("TextLabel")
+	playtimeLabel.Name = "PlaytimeLabel"
+	playtimeLabel.Position = UDim2.new(0, 0, 0, 56)
+	playtimeLabel.Size = UDim2.new(1, 0, 0, 14)
+	playtimeLabel.BackgroundTransparency = 1
+	playtimeLabel.Font = Theme.Font
+	playtimeLabel.TextSize = 11
+	playtimeLabel.TextStrokeTransparency = 0.6
+	playtimeLabel.TextColor3 = Theme.Colors.AccentGold
+	playtimeLabel.Text = ""
+	playtimeLabel.Visible = false
+	playtimeLabel.Parent = billboard
+	playtimeLabels[player] = playtimeLabel
+	billboard.AncestryChanged:Connect(function()
+		if not billboard:IsDescendantOf(game) and playtimeLabels[player] == playtimeLabel then
+			playtimeLabels[player] = nil
+		end
+	end)
 
 	local function updateTitle()
 		local title = player:GetAttribute("PartyHostTitle") :: string?
@@ -93,6 +119,17 @@ local function attachNametag(player: Player, character: Model)
 			rainbowConnection = nil
 		end
 	end)
+end
+
+--- Shows (or hides, if text is nil) a small line under the given player's nametag. Only
+--- ModPlaytimeClient calls this, and only with data the server already restricted to mods.
+function NametagClient.setPlaytimeText(targetPlayer: Player, text: string?)
+	local label = playtimeLabels[targetPlayer]
+	if not label then
+		return
+	end
+	label.Text = text or ""
+	label.Visible = text ~= nil
 end
 
 local function onPlayerAdded(player: Player)

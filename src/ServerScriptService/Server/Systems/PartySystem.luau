@@ -412,6 +412,12 @@ local function onJoinParty(player: Player, code: any)
 	teleportPlayerToPart(player, party.spawnPart)
 	giveRainbowStick(player)
 	maybeOfferRainbowStick(player)
+
+	-- Counts toward the host's cumulative "guests welcomed" total (see PARTY KING title).
+	local hostData = PlayerDataStore.get(party.host)
+	if hostData then
+		hostData.party.totalGuestJoins += 1
+	end
 end
 
 local function onLeaveParty(player: Player)
