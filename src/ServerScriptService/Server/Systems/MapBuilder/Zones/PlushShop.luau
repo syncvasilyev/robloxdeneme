@@ -1,21 +1,22 @@
 --!strict
--- A small, cozy plush shop near the main square — purely decorative, no real purchasing. Uses
--- original bear/rabbit/fox-style plush designs (not FNAF character copies) to keep the same
--- "cute animatronic plushie shelf" vibe without a copyright risk.
+-- A small, cozy plush shop near the main square — purely decorative, no real purchasing. Four
+-- original "stage mascot" characters (bear/bunny/chick/fox), each with its own silhouette and
+-- costume prop, deliberately evoking a friendly animatronic-band gift shop without copying any
+-- specific existing character's design.
 
 local PlushShop = {}
 
-local PLUSH_COLORS = {
-	{ body = Color3.fromRGB(180, 90, 60), accent = Color3.fromRGB(235, 210, 180) },
-	{ body = Color3.fromRGB(90, 140, 170), accent = Color3.fromRGB(230, 230, 235) },
-	{ body = Color3.fromRGB(160, 80, 150), accent = Color3.fromRGB(240, 210, 230) },
-	{ body = Color3.fromRGB(210, 180, 70), accent = Color3.fromRGB(90, 60, 40) },
+local CHARACTERS = {
+	{ kind = "bear", body = Color3.fromRGB(150, 95, 55), accent = Color3.fromRGB(235, 210, 180) },
+	{ kind = "bunny", body = Color3.fromRGB(70, 130, 150), accent = Color3.fromRGB(230, 230, 235) },
+	{ kind = "chick", body = Color3.fromRGB(225, 195, 60), accent = Color3.fromRGB(235, 150, 60) },
+	{ kind = "fox", body = Color3.fromRGB(195, 100, 55), accent = Color3.fromRGB(250, 235, 220) },
 }
 
-local function buildPlush(parent: Instance, cframe: CFrame, paletteIndex: number)
-	local palette = PLUSH_COLORS[((paletteIndex - 1) % #PLUSH_COLORS) + 1]
+local function buildPlush(parent: Instance, cframe: CFrame, characterIndex: number)
+	local character = CHARACTERS[((characterIndex - 1) % #CHARACTERS) + 1]
 	local model = Instance.new("Model")
-	model.Name = "Plushie"
+	model.Name = "Plushie_" .. character.kind
 	model.Parent = parent
 
 	local body = Instance.new("Part")
@@ -25,7 +26,7 @@ local function buildPlush(parent: Instance, cframe: CFrame, paletteIndex: number
 	body.Shape = Enum.PartType.Ball
 	body.Size = Vector3.new(1.1, 1.3, 1.1)
 	body.CFrame = cframe * CFrame.new(0, 0.65, 0)
-	body.Color = palette.body
+	body.Color = character.body
 	body.Material = Enum.Material.Fabric
 	body.Parent = model
 
@@ -36,21 +37,80 @@ local function buildPlush(parent: Instance, cframe: CFrame, paletteIndex: number
 	head.Shape = Enum.PartType.Ball
 	head.Size = Vector3.new(0.85, 0.85, 0.85)
 	head.CFrame = cframe * CFrame.new(0, 1.45, 0)
-	head.Color = palette.body
+	head.Color = character.body
 	head.Material = Enum.Material.Fabric
 	head.Parent = model
 
-	for _, xOffset in ipairs({ -0.32, 0.32 }) do
-		local ear = Instance.new("Part")
-		ear.Name = "Ear"
-		ear.Anchored = true
-		ear.CanCollide = false
-		ear.Shape = Enum.PartType.Ball
-		ear.Size = Vector3.new(0.3, 0.3, 0.3)
-		ear.CFrame = cframe * CFrame.new(xOffset, 1.85, 0)
-		ear.Color = palette.body
-		ear.Material = Enum.Material.Fabric
-		ear.Parent = model
+	-- Ears: the main silhouette read for each character (round / tall / small+tufted / pointed).
+	if character.kind == "bunny" then
+		for _, xOffset in ipairs({ -0.28, 0.28 }) do
+			local ear = Instance.new("Part")
+			ear.Name = "Ear"
+			ear.Anchored = true
+			ear.CanCollide = false
+			ear.Shape = Enum.PartType.Cylinder
+			ear.Size = Vector3.new(0.85, 0.26, 0.16)
+			ear.CFrame = cframe * CFrame.new(xOffset, 2.15, 0.05) * CFrame.Angles(0, 0, math.rad(90) + (xOffset > 0 and math.rad(-8) or math.rad(8)))
+			ear.Color = character.body
+			ear.Material = Enum.Material.Fabric
+			ear.Parent = model
+			local innerEar = Instance.new("Part")
+			innerEar.Name = "InnerEar"
+			innerEar.Anchored = true
+			innerEar.CanCollide = false
+			innerEar.Shape = Enum.PartType.Cylinder
+			innerEar.Size = Vector3.new(0.55, 0.14, 0.05)
+			innerEar.CFrame = ear.CFrame
+			innerEar.Color = character.accent
+			innerEar.Material = Enum.Material.Fabric
+			innerEar.Parent = model
+		end
+	elseif character.kind == "fox" then
+		for _, xOffset in ipairs({ -0.34, 0.34 }) do
+			local ear = Instance.new("Part")
+			ear.Name = "Ear"
+			ear.Anchored = true
+			ear.CanCollide = false
+			ear.Shape = Enum.PartType.Ball
+			ear.Size = Vector3.new(0.4, 0.5, 0.22)
+			ear.CFrame = cframe * CFrame.new(xOffset, 1.92, 0) * CFrame.Angles(0, 0, math.rad(xOffset > 0 and -12 or 12))
+			ear.Color = character.body
+			ear.Material = Enum.Material.Fabric
+			ear.Parent = model
+		end
+	elseif character.kind == "chick" then
+		local tuft = Instance.new("Part")
+		tuft.Name = "Tuft"
+		tuft.Anchored = true
+		tuft.CanCollide = false
+		tuft.Shape = Enum.PartType.Ball
+		tuft.Size = Vector3.new(0.18, 0.3, 0.18)
+		tuft.CFrame = cframe * CFrame.new(0, 2.02, 0.1)
+		tuft.Color = character.accent
+		tuft.Material = Enum.Material.Fabric
+		tuft.Parent = model
+		local beak = Instance.new("WedgePart")
+		beak.Name = "Beak"
+		beak.Anchored = true
+		beak.CanCollide = false
+		beak.Size = Vector3.new(0.18, 0.22, 0.3)
+		beak.CFrame = cframe * CFrame.new(0, 1.42, -0.5) * CFrame.Angles(0, math.rad(180), math.rad(90))
+		beak.Color = character.accent
+		beak.Material = Enum.Material.SmoothPlastic
+		beak.Parent = model
+	else
+		for _, xOffset in ipairs({ -0.32, 0.32 }) do
+			local ear = Instance.new("Part")
+			ear.Name = "Ear"
+			ear.Anchored = true
+			ear.CanCollide = false
+			ear.Shape = Enum.PartType.Ball
+			ear.Size = Vector3.new(0.34, 0.34, 0.34)
+			ear.CFrame = cframe * CFrame.new(xOffset, 1.88, 0)
+			ear.Color = character.body
+			ear.Material = Enum.Material.Fabric
+			ear.Parent = model
+		end
 	end
 
 	for _, xOffset in ipairs({ -0.2, 0.2 }) do
@@ -59,7 +119,7 @@ local function buildPlush(parent: Instance, cframe: CFrame, paletteIndex: number
 		eye.Anchored = true
 		eye.CanCollide = false
 		eye.Shape = Enum.PartType.Ball
-		eye.Size = Vector3.new(0.14, 0.14, 0.14)
+		eye.Size = Vector3.new(0.16, 0.16, 0.16)
 		eye.CFrame = cframe * CFrame.new(xOffset, 1.5, -0.38)
 		eye.Color = Color3.fromRGB(20, 18, 18)
 		eye.Material = Enum.Material.SmoothPlastic
@@ -73,9 +133,55 @@ local function buildPlush(parent: Instance, cframe: CFrame, paletteIndex: number
 	belly.Shape = Enum.PartType.Ball
 	belly.Size = Vector3.new(0.6, 0.7, 0.35)
 	belly.CFrame = cframe * CFrame.new(0, 0.6, -0.42)
-	belly.Color = palette.accent
+	belly.Color = character.accent
 	belly.Material = Enum.Material.Fabric
 	belly.Parent = model
+
+	-- Costume prop: each character gets one distinct "stage outfit" accessory instead of
+	-- copying any real character's exact design.
+	if character.kind == "bear" then
+		local hat = Instance.new("Part")
+		hat.Name = "TopHat"
+		hat.Anchored = true
+		hat.CanCollide = false
+		hat.Shape = Enum.PartType.Cylinder
+		hat.Size = Vector3.new(0.5, 0.34, 0.34)
+		hat.CFrame = cframe * CFrame.new(0, 2.05, 0) * CFrame.Angles(0, 0, math.rad(90))
+		hat.Color = Color3.fromRGB(25, 22, 20)
+		hat.Material = Enum.Material.Fabric
+		hat.Parent = model
+		local brim = Instance.new("Part")
+		brim.Name = "HatBrim"
+		brim.Anchored = true
+		brim.CanCollide = false
+		brim.Shape = Enum.PartType.Cylinder
+		brim.Size = Vector3.new(0.08, 0.55, 0.55)
+		brim.CFrame = cframe * CFrame.new(0, 1.86, 0) * CFrame.Angles(0, 0, math.rad(90))
+		brim.Color = Color3.fromRGB(25, 22, 20)
+		brim.Material = Enum.Material.Fabric
+		brim.Parent = model
+	elseif character.kind == "bunny" or character.kind == "fox" then
+		local bowtie = Instance.new("Part")
+		bowtie.Name = "Bowtie"
+		bowtie.Anchored = true
+		bowtie.CanCollide = false
+		bowtie.Size = Vector3.new(0.36, 0.2, 0.14)
+		bowtie.CFrame = cframe * CFrame.new(0, 1.02, -0.5)
+		bowtie.Color = Color3.fromRGB(150, 25, 30)
+		bowtie.Material = Enum.Material.Fabric
+		bowtie.Parent = model
+	else
+		local bib = Instance.new("Part")
+		bib.Name = "Bib"
+		bib.Anchored = true
+		bib.CanCollide = false
+		bib.Shape = Enum.PartType.Ball
+		bib.Size = Vector3.new(0.4, 0.3, 0.15)
+		bib.CFrame = cframe * CFrame.new(0, 0.95, -0.5)
+		bib.Color = Color3.fromRGB(230, 230, 235)
+		bib.Material = Enum.Material.Fabric
+		bib.Parent = model
+	end
 end
 
 function PlushShop.build(container: Instance, PropLibrary: any, origin: CFrame)
