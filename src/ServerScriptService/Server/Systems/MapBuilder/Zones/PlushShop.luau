@@ -198,13 +198,25 @@ function PlushShop.build(container: Instance, PropLibrary: any, origin: CFrame)
 	)
 	building.Name = "ShopBuilding"
 
-	-- Storefront sign, lit from below.
+	-- Storefront sign: a retro light-bulb marquee (dark backing frame, ring of bulb lights,
+	-- star accents, a little mascot perched on top) — the classic "family pizzeria arcade sign"
+	-- look, but with our own name/text so it isn't a copy of anyone's actual logo.
+	local marqueeFrame = Instance.new("Part")
+	marqueeFrame.Name = "MarqueeFrame"
+	marqueeFrame.Anchored = true
+	marqueeFrame.CanCollide = false
+	marqueeFrame.Size = Vector3.new(9.4, 3, 0.4)
+	marqueeFrame.CFrame = doorCFrame * CFrame.new(0, 4.3, 0.35)
+	marqueeFrame.Color = Color3.fromRGB(30, 22, 26)
+	marqueeFrame.Material = Enum.Material.Metal
+	marqueeFrame.Parent = zone
+
 	local signBoard = Instance.new("Part")
 	signBoard.Name = "SignBoard"
 	signBoard.Anchored = true
 	signBoard.CanCollide = false
 	signBoard.Size = Vector3.new(8, 2, 0.3)
-	signBoard.CFrame = doorCFrame * CFrame.new(0, 4.3, 0.4)
+	signBoard.CFrame = marqueeFrame.CFrame * CFrame.new(0, 0, 0.15)
 	signBoard.Color = Color3.fromRGB(255, 225, 235)
 	signBoard.Material = Enum.Material.Neon
 	signBoard.Parent = zone
@@ -224,6 +236,66 @@ function PlushShop.build(container: Instance, PropLibrary: any, origin: CFrame)
 	signLight.Brightness = 2
 	signLight.Range = 14
 	signLight.Parent = signBoard
+
+	-- Ring of marquee bulbs around the frame's border, alternating warm colors.
+	local bulbColors = { Color3.fromRGB(255, 210, 90), Color3.fromRGB(255, 110, 120) }
+	local halfWidth, halfHeight = 4.5, 1.3
+	local bulbSpots: { Vector3 } = {}
+	for x = -halfWidth, halfWidth, 1.1 do
+		table.insert(bulbSpots, Vector3.new(x, halfHeight, 0))
+		table.insert(bulbSpots, Vector3.new(x, -halfHeight, 0))
+	end
+	for y = -halfHeight + 1.1, halfHeight - 1.1, 1.1 do
+		table.insert(bulbSpots, Vector3.new(-halfWidth, y, 0))
+		table.insert(bulbSpots, Vector3.new(halfWidth, y, 0))
+	end
+	for i, spot in ipairs(bulbSpots) do
+		local bulb = Instance.new("Part")
+		bulb.Name = "MarqueeBulb"
+		bulb.Anchored = true
+		bulb.CanCollide = false
+		bulb.Shape = Enum.PartType.Ball
+		bulb.Size = Vector3.new(0.22, 0.22, 0.22)
+		bulb.CFrame = marqueeFrame.CFrame * CFrame.new(spot + Vector3.new(0, 0, 0.3))
+		bulb.Color = bulbColors[(i % #bulbColors) + 1]
+		bulb.Material = Enum.Material.Neon
+		bulb.Parent = zone
+	end
+
+	-- A small star accent and a tiny bear-mascot silhouette perched on top of the frame.
+	local star = Instance.new("Part")
+	star.Name = "MarqueeStar"
+	star.Anchored = true
+	star.CanCollide = false
+	star.Shape = Enum.PartType.Ball
+	star.Size = Vector3.new(0.5, 0.5, 0.5)
+	star.CFrame = marqueeFrame.CFrame * CFrame.new(-4.9, 0, 0.3)
+	star.Color = Color3.fromRGB(255, 225, 120)
+	star.Material = Enum.Material.Neon
+	star.Parent = zone
+
+	local mascotHead = Instance.new("Part")
+	mascotHead.Name = "MascotHead"
+	mascotHead.Anchored = true
+	mascotHead.CanCollide = false
+	mascotHead.Shape = Enum.PartType.Ball
+	mascotHead.Size = Vector3.new(1.1, 1.1, 1.1)
+	mascotHead.CFrame = marqueeFrame.CFrame * CFrame.new(4.3, 2.1, 0)
+	mascotHead.Color = Color3.fromRGB(150, 95, 55)
+	mascotHead.Material = Enum.Material.Fabric
+	mascotHead.Parent = zone
+	for _, xOffset in ipairs({ -0.4, 0.4 }) do
+		local mascotEar = Instance.new("Part")
+		mascotEar.Name = "MascotEar"
+		mascotEar.Anchored = true
+		mascotEar.CanCollide = false
+		mascotEar.Shape = Enum.PartType.Ball
+		mascotEar.Size = Vector3.new(0.4, 0.4, 0.4)
+		mascotEar.CFrame = mascotHead.CFrame * CFrame.new(xOffset, 0.6, 0)
+		mascotEar.Color = Color3.fromRGB(150, 95, 55)
+		mascotEar.Material = Enum.Material.Fabric
+		mascotEar.Parent = zone
+	end
 
 	-- Two big display windows flanking the door, warm-lit from inside.
 	for _, xOffset in ipairs({ -5.5, 5.5 }) do
