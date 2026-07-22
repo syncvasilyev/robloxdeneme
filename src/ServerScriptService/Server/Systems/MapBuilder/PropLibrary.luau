@@ -264,7 +264,7 @@ function PropLibrary.tree(parent: Instance, cframe: CFrame, variant: number?): M
 		Size = Vector3.new(0.9, trunkHeight, 0.9),
 		CFrame = cframe * CFrame.new(0, trunkHeight / 2, 0),
 		Color = Color3.fromRGB(58, 40, 26),
-		Material = Enum.Material.Bark,
+		Material = Enum.Material.Wood,
 		Name = "Trunk",
 	})
 	trunk.Parent = model
