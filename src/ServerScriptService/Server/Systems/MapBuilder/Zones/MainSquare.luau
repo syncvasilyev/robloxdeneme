@@ -96,6 +96,27 @@ function MainSquare.build(container: Instance, PropLibrary: any, origin: CFrame)
 		end
 	end
 
+	-- Glowing colored floor pools near the corners — dramatic accent light against the dark
+	-- base, same idea as the reference's glowing floor patch, in the hall's red.
+	for _, spot in ipairs({ Vector3.new(-30, -30), Vector3.new(30, -30), Vector3.new(-30, 30), Vector3.new(30, 30) }) do
+		local glowPool = Instance.new("Part")
+		glowPool.Name = "FloorGlowPool"
+		glowPool.Anchored = true
+		glowPool.CanCollide = false
+		glowPool.Shape = Enum.PartType.Cylinder
+		glowPool.Size = Vector3.new(0.1, 9, 9)
+		glowPool.CFrame = origin * CFrame.new(spot.X, 1.06, spot.Y) * CFrame.Angles(0, 0, math.rad(90))
+		glowPool.Color = Color3.fromRGB(180, 30, 50)
+		glowPool.Material = Enum.Material.Neon
+		glowPool.Transparency = 0.35
+		glowPool.Parent = zone
+		local poolLight = Instance.new("PointLight")
+		poolLight.Color = Color3.fromRGB(200, 40, 60)
+		poolLight.Brightness = 2.5
+		poolLight.Range = 18
+		poolLight.Parent = glowPool
+	end
+
 	-- Red carpet paths radiating from the center toward the spawn point and the main exits.
 	local carpetDirections = { Vector3.new(0, 1), Vector3.new(0, -1), Vector3.new(1, 0), Vector3.new(-1, 0) }
 	for _, dir in ipairs(carpetDirections) do

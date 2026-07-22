@@ -78,6 +78,27 @@ function Park.build(container: Instance, PropLibrary: any, origin: CFrame)
 		end
 	end
 
+	-- Glowing blue floor pools near the corners, same dramatic-accent idea as Main Square's red
+	-- ones.
+	for _, spot in ipairs({ Vector3.new(-22, -22), Vector3.new(22, -22), Vector3.new(-22, 22), Vector3.new(22, 22) }) do
+		local glowPool = Instance.new("Part")
+		glowPool.Name = "FloorGlowPool"
+		glowPool.Anchored = true
+		glowPool.CanCollide = false
+		glowPool.Shape = Enum.PartType.Cylinder
+		glowPool.Size = Vector3.new(0.1, 7, 7)
+		glowPool.CFrame = origin * CFrame.new(spot.X, 1.06, spot.Y) * CFrame.Angles(0, 0, math.rad(90))
+		glowPool.Color = Color3.fromRGB(40, 100, 200)
+		glowPool.Material = Enum.Material.Neon
+		glowPool.Transparency = 0.35
+		glowPool.Parent = zone
+		local poolLight = Instance.new("PointLight")
+		poolLight.Color = Color3.fromRGB(60, 120, 220)
+		poolLight.Brightness = 2.2
+		poolLight.Range = 15
+		poolLight.Parent = glowPool
+	end
+
 	-- Blue carpet cross, same idea as Main Square's red one, sitting flush on the floor.
 	for _, dir in ipairs({ Vector3.new(0, 1), Vector3.new(1, 0) }) do
 		local carpet = Instance.new("Part")

@@ -39,19 +39,19 @@ end
 function AtmosphereSetup.apply()
 	Lighting.ClockTime = 21.5
 	Lighting.GeographicLatitude = 0
-	Lighting.Brightness = 2.5
-	-- Ambient/OutdoorAmbient carry most of the base visibility (fixtures shouldn't be the only
-	-- thing keeping the map from going black), dialed back from the earlier pass which read as
-	-- too bright/glowing everywhere.
-	Lighting.Ambient = Color3.fromRGB(85, 88, 100)
-	Lighting.OutdoorAmbient = Color3.fromRGB(95, 98, 112)
-	Lighting.ColorShift_Top = Color3.fromRGB(75, 78, 100)
-	Lighting.ColorShift_Bottom = Color3.fromRGB(35, 32, 44)
-	Lighting.EnvironmentDiffuseScale = 0.6
-	Lighting.EnvironmentSpecularScale = 0.4
+	Lighting.Brightness = 1.8
+	-- Darker base than before on purpose — per the reference (sparse fixtures, dramatic colored
+	-- glow pools, dark ceiling/corners), fixtures and accent lights should carry the drama rather
+	-- than everything being evenly lit.
+	Lighting.Ambient = Color3.fromRGB(45, 46, 54)
+	Lighting.OutdoorAmbient = Color3.fromRGB(50, 52, 60)
+	Lighting.ColorShift_Top = Color3.fromRGB(50, 52, 68)
+	Lighting.ColorShift_Bottom = Color3.fromRGB(20, 18, 26)
+	Lighting.EnvironmentDiffuseScale = 0.5
+	Lighting.EnvironmentSpecularScale = 0.35
 	Lighting.GlobalShadows = true
-	Lighting.ShadowSoftness = 0.35
-	Lighting.ExposureCompensation = 0.25
+	Lighting.ShadowSoftness = 0.25
+	Lighting.ExposureCompensation = 0.15
 
 	local sky = Instance.new("Sky")
 	sky.Name = "FacilitySky"
@@ -74,16 +74,16 @@ function AtmosphereSetup.apply()
 	local colorCorrection = Instance.new("ColorCorrectionEffect")
 	colorCorrection.Name = "FacilityGrade"
 	colorCorrection.TintColor = Color3.fromRGB(235, 238, 245)
-	colorCorrection.Contrast = 0.08
-	colorCorrection.Saturation = 0.02
-	colorCorrection.Brightness = 0
+	colorCorrection.Contrast = 0.16
+	colorCorrection.Saturation = 0.05
+	colorCorrection.Brightness = -0.02
 	colorCorrection.Parent = Lighting
 
 	local bloom = Instance.new("BloomEffect")
 	bloom.Name = "SoftBloom"
-	bloom.Intensity = 0.3
-	bloom.Size = 18
-	bloom.Threshold = 1.5
+	bloom.Intensity = 0.5
+	bloom.Size = 20
+	bloom.Threshold = 1.2
 	bloom.Parent = Lighting
 
 	local depthOfField = Instance.new("DepthOfFieldEffect")
